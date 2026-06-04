@@ -1,31 +1,12 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-bold text-xl text-green-800 leading-tight">
-            {{ __('Dashboard Admin') }}
+            {{ __('Dashboard Pantauan Pengelola') }}
         </h2>
     </x-slot>
 
     <div class="py-8">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-
-            @if($pendingValidasi > 0)
-            <div class="mb-8 flex items-center justify-between bg-yellow-50 border border-yellow-200 p-4 rounded-xl shadow-sm">
-                <div class="flex items-center gap-3">
-                    <div class="bg-yellow-100 p-2 rounded-lg text-yellow-600">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                        </svg>
-                    </div>
-                    <div>
-                        <p class="font-bold text-yellow-800">Tindakan Diperlukan</p>
-                        <p class="text-sm text-yellow-700">Terdapat <b>{{ $pendingValidasi }}</b> transaksi menunggu validasi Anda.</p>
-                    </div>
-                </div>
-                <a href="{{ route('validasi.index') }}" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-lg text-sm transition-colors shadow-sm">
-                    Proses Sekarang
-                </a>
-            </div>
-            @endif
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                 <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 relative overflow-hidden group">

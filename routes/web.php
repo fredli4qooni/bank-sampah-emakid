@@ -8,6 +8,8 @@ use App\Http\Controllers\TransaksiController;
 use App\Http\Controllers\ValidasiController;
 use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\LaporanController;
+use App\Http\Controllers\UserController;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -45,6 +47,8 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/validasi', [ValidasiController::class, 'index'])->name('validasi.index');
     Route::get('/validasi/{id}', [ValidasiController::class, 'show'])->name('validasi.show');
     Route::post('/validasi/{id}/process', [ValidasiController::class, 'process'])->name('validasi.process');
+
+    Route::resource('users', UserController::class);
 });
 
 Route::middleware(['auth', 'role:penimbang'])->group(function () {
@@ -54,6 +58,11 @@ Route::middleware(['auth', 'role:penimbang'])->group(function () {
 
 Route::middleware(['auth', 'role:pengelola'])->group(function () {
     Route::get('/pengelola/dashboard', [DashboardController::class, 'pengelola'])->name('pengelola.dashboard');
+});
+
+Route::middleware(['auth', 'role:admin,pengelola'])->group(function () {
+    Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
+    Route::get('/laporan/pdf', [LaporanController::class, 'exportPdf'])->name('laporan.pdf');
 });
 
 require __DIR__.'/auth.php';
