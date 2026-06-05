@@ -10,6 +10,7 @@ use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ChatbotController;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -47,6 +48,10 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/validasi', [ValidasiController::class, 'index'])->name('validasi.index');
     Route::get('/validasi/{id}', [ValidasiController::class, 'show'])->name('validasi.show');
     Route::post('/validasi/{id}/process', [ValidasiController::class, 'process'])->name('validasi.process');
+
+    Route::post('/chatbot/query', [ChatbotController::class, 'query'])
+         ->middleware('throttle:60,1')
+         ->name('chatbot.query');
 
     Route::resource('users', UserController::class);
 });

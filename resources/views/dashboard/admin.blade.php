@@ -124,6 +124,184 @@
         </div>
     </div>
 
+    <div x-data="chatbot()" class="fixed bottom-6 right-6 z-50 font-sans">
+
+        <button @click="toggle()" x-show="!isOpen" x-transition.scale.origin.bottom.right
+            class="bg-green-600 hover:bg-green-700 text-white p-4 rounded-full shadow-2xl flex items-center justify-center transform transition hover:scale-110 focus:outline-none focus:ring-4 focus:ring-green-300">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+            </svg>
+        </button>
+
+        <div x-show="isOpen" x-cloak x-transition.origin.bottom.right
+            class="bg-white w-[380px] h-[500px] max-h-[85vh] rounded-2xl shadow-2xl border border-gray-200 flex flex-col overflow-hidden">
+
+            <div class="bg-gradient-to-r from-green-600 to-green-700 text-white p-4 flex justify-between items-center shadow-md z-10">
+                <div class="flex items-center gap-3">
+                    <div class="bg-white/20 p-2 rounded-full">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-sm">Admin Assistant</h3>
+                        <p class="text-xs text-green-100">Cek data lebih cepat</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-1">
+                    <button @click="clearHistory()" title="Bersihkan Percakapan" class="p-1.5 rounded-lg hover:bg-white/20 transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                    </button>
+                    <button @click="toggle()" class="p-1.5 rounded-lg hover:bg-white/20 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div id="chat-container" class="flex-1 p-4 overflow-y-auto bg-gray-50 flex flex-col gap-3">
+
+                <template x-for="(msg, index) in messages" :key="index">
+                    <div class="flex flex-col" :class="msg.sender === 'user' ? 'items-end' : 'items-start'">
+                        <div class="max-w-[85%] rounded-2xl px-4 py-2.5 text-sm shadow-sm"
+                            :class="msg.sender === 'user' ? 'bg-green-600 text-white rounded-br-none' : 'bg-white border border-gray-100 text-gray-800 rounded-bl-none'">
+                            <span class="whitespace-pre-wrap" x-text="msg.text"></span>
+                        </div>
+                    </div>
+                </template>
+
+                <div x-show="isLoading" class="flex items-start">
+                    <div class="bg-white border border-gray-100 text-gray-500 rounded-2xl rounded-bl-none px-4 py-3 text-sm shadow-sm flex items-center gap-1.5">
+                        <span class="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></span>
+                        <span class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.1s"></span>
+                        <span class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></span>
+                    </div>
+                </div>
+
+                <div x-show="messages.length <= 2" class="mt-4 flex flex-wrap gap-2">
+                    <p class="w-full text-xs text-gray-400 font-bold uppercase mb-1">Coba Tanyakan:</p>
+                    <template x-for="chip in quickChips">
+                        <button @click="sendQuickMessage(chip)" class="bg-white border border-green-200 text-green-700 hover:bg-green-50 text-xs px-3 py-1.5 rounded-full transition-colors shadow-sm">
+                            <span x-text="chip"></span>
+                        </button>
+                    </template>
+                </div>
+            </div>
+
+            <div class="p-3 bg-white border-t border-gray-100">
+                <form @submit.prevent="sendMessage()" class="flex items-center gap-2 relative">
+                    <input type="text" x-model="newMessage" placeholder="Tanya sesuatu... (Cek saldo, dll)"
+                        class="flex-1 border-gray-300 focus:border-green-500 focus:ring focus:ring-green-200 rounded-full text-sm pl-4 pr-12 py-2.5 shadow-sm transition-colors"
+                        :disabled="isLoading">
+                    <button type="submit" :disabled="newMessage.trim() === '' || isLoading"
+                        class="absolute right-1 top-1 bottom-1 bg-green-600 hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white p-2 rounded-full transition-colors flex items-center justify-center">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                        </svg>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('chatbot', () => ({
+                isOpen: false,
+                isLoading: false,
+                newMessage: '',
+                messages: [{
+                    sender: 'bot',
+                    text: 'Halo, Admin! Ada yang bisa saya bantu cek hari ini?'
+                }],
+                quickChips: [
+                    'Saldo nasabah', 'Transaksi hari ini', 'Transaksi pending', 'Total nasabah'
+                ],
+
+                init() {
+                    this.$watch('messages', () => {
+                        this.scrollToBottom();
+                    });
+                },
+
+                toggle() {
+                    this.isOpen = !this.isOpen;
+                    if (this.isOpen) {
+                        setTimeout(() => this.scrollToBottom(), 100);
+                    }
+                },
+
+                scrollToBottom() {
+                    const container = document.getElementById('chat-container');
+                    if (container) {
+                        container.scrollTop = container.scrollHeight;
+                    }
+                },
+
+                clearHistory() {
+                    this.messages = [{
+                        sender: 'bot',
+                        text: 'Riwayat percakapan telah dibersihkan.'
+                    }];
+                },
+
+                sendQuickMessage(text) {
+                    this.newMessage = text;
+                    this.sendMessage();
+                },
+
+                async sendMessage() {
+                    if (this.newMessage.trim() === '') return;
+
+                    const userText = this.newMessage;
+                    this.messages.push({
+                        sender: 'user',
+                        text: userText
+                    });
+                    this.newMessage = '';
+                    this.isLoading = true;
+
+                    try {
+                        const response = await fetch('{{ route("chatbot.query") }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                            },
+                            body: JSON.stringify({
+                                message: userText
+                            })
+                        });
+
+                        const data = await response.json();
+
+                        if (data.status === 'success') {
+                            this.messages.push({
+                                sender: 'bot',
+                                text: data.reply
+                            });
+                        } else {
+                            this.messages.push({
+                                sender: 'bot',
+                                text: 'Maaf, terjadi kesalahan pada sistem.'
+                            });
+                        }
+                    } catch (error) {
+                        this.messages.push({
+                            sender: 'bot',
+                            text: 'Maaf, terjadi kendala jaringan saat menghubungi server.'
+                        });
+                    } finally {
+                        this.isLoading = false;
+                    }
+                }
+            }));
+        });
+    </script>
+
     <x-slot name="scripts">
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <script>
