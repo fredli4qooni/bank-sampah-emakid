@@ -14,6 +14,7 @@ use App\Http\Controllers\ChatbotController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\FaqController;
 use App\Http\Controllers\PublicController;
+use App\Http\Controllers\PenarikanController;
 
 Route::get('/', [PublicController::class, 'index'])->name('home');
 
@@ -59,6 +60,13 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
     Route::get('/backup', [App\Http\Controllers\BackupController::class, 'index'])->name('backup.index');
     Route::post('/backup/process', [App\Http\Controllers\BackupController::class, 'process'])->name('backup.process');
+
+    Route::get('/penarikan', [App\Http\Controllers\PenarikanController::class, 'index'])->name('penarikan.index');
+    Route::get('/penarikan/create', [App\Http\Controllers\PenarikanController::class, 'create'])->name('penarikan.create');
+    Route::post('/penarikan', [App\Http\Controllers\PenarikanController::class, 'store'])->name('penarikan.store');
+
+    Route::get('/transaksi/{id}/edit', [App\Http\Controllers\TransaksiController::class, 'edit'])->name('transaksi.edit');
+    Route::put('/transaksi/{id}', [App\Http\Controllers\TransaksiController::class, 'update'])->name('transaksi.update');
 
     Route::resource('faq', FaqController::class);
     Route::resource('users', UserController::class);

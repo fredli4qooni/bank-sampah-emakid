@@ -75,4 +75,62 @@ class TransaksiController extends Controller
             return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
+
+    public function edit(int $id_transaksi)
+    {
+        $transaksi = Transaksi::with(['nasabah', 'detail.jenisSampah'])->findOrFail($id_transaksi);
+        
+        if ($transaksi->status_validasi !== 'pending') {
+            return redirect()->route('validasi.index')->with('error', 'Hanya transaksi berstatus pending yang dapat dikoreksi.');
+        }
+
+        return view('transaksi.edit', compact('transaksi'));
+    }
+
+    public function update(Request $request, int $id_transaksi)
+    {
+        $transaksi = Transaksi::with('detail')->findOrFail($id_transaksi);
+
+        if ($transaksi->status_validasi !== 'pending') {
+            return redirect()->route('validasi.index')->with('error', 'Transaksi sudah diproses dan tidak dapat diubah.');
+        }
+
+        $request->validate([
+            'berat' => 'required|array',
+            'berat.*' => 'required|numeric|min:0.01',
+            'harga' => 'required|array',
+            'harga.*' => 'required|numeric|min:0',
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $totalNilaiBaru = 0;
+
+            foreach ($request->berat as $id_detail => $beratBaru) {
+                $detail = \App\Models\DetailTransaksi::findOrFail($id_detail);
+                
+                $hargaBaru = $request->harga[$id_detail] ?? $detail->harga_saat_transaksi;
+                
+                $subtotal = $beratBaru * $hargaBaru;
+
+                $detail->update([
+                    'berat' => $beratBaru,
+                    'harga_saat_transaksi' => $hargaBaru,
+                    'subtotal' => $subtotal
+                ]);
+
+                $totalNilaiBaru += $subtotal;
+            }
+
+            $transaksi->update([
+                'total_nilai' => $totalNilaiBaru
+            ]);
+
+            DB::commit();
+            return redirect()->route('validasi.index')->with('success', 'Transaksi atas nama ' . $transaksi->nasabah->nama . ' berhasil dikoreksi.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Terjadi kesalahan sistem: ' . $e->getMessage());
+        }
+    }
 }

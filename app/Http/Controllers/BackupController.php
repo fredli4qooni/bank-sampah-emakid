@@ -5,8 +5,12 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\BackupLog;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 use ZipArchive;
+
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\NasabahExport;
+use App\Exports\TransaksiExport;
 
 class BackupController extends Controller
 {
@@ -26,17 +30,20 @@ class BackupController extends Controller
             $dbName = env('DB_DATABASE');
             $dbHost = env('DB_HOST', '127.0.0.1');
 
-            $date = now()->format('Y-m-d_HHmmss');
+            $date = now()->format('Y-m-d_His');
             $sqlFileName = "backup_{$dbName}_{$date}.sql";
-            $zipFileName = "backup_emakid_{$date}.zip";
+            $nasabahExcelName = "rekap_nasabah_{$date}.xlsx";
+            $transaksiExcelName = "rekap_transaksi_{$date}.xlsx";
+            $zipFileName = "backup_emakid_full_{$date}.zip";
 
-            $tempDir = storage_path('app/temp');
-            if (!File::exists($tempDir)) {
-                File::makeDirectory($tempDir, 0755, true);
+            if (!Storage::disk('local')->exists('temp')) {
+                Storage::disk('local')->makeDirectory('temp');
             }
 
-            $sqlPath = $tempDir . '/' . $sqlFileName;
-            $zipPath = $tempDir . '/' . $zipFileName;
+            $sqlPath = Storage::disk('local')->path('temp/' . $sqlFileName);
+            $nasabahExcelPath = Storage::disk('local')->path('temp/' . $nasabahExcelName);
+            $transaksiExcelPath = Storage::disk('local')->path('temp/' . $transaksiExcelName);
+            $zipPath = Storage::disk('local')->path('temp/' . $zipFileName);
 
             $passwordParam = $dbPass ? "-p\"{$dbPass}\"" : "";
             $dumpPath = env('MYSQLDUMP_PATH', 'mysqldump'); 
@@ -47,15 +54,24 @@ class BackupController extends Controller
             exec($command, $output, $returnVar);
 
             if ($returnVar !== 0) {
-                throw new \Exception("Gagal eksekusi mysqldump. Pastikan mysqldump tersedia di Environment Variables Windows/Server Anda.");
+                throw new \Exception("Gagal eksekusi mysqldump. Periksa kembali pengaturan path di file .env Anda.");
             }
+
+            Excel::store(new NasabahExport, 'temp/' . $nasabahExcelName, 'local');
+            Excel::store(new TransaksiExport, 'temp/' . $transaksiExcelName, 'local');
 
             $zip = new ZipArchive();
             if ($zip->open($zipPath, ZipArchive::CREATE) === TRUE) {
+                if (!file_exists($sqlPath) || !file_exists($nasabahExcelPath) || !file_exists($transaksiExcelPath)) {
+                    throw new \Exception("Gagal mendeteksi file mentah (.sql / .xlsx) di folder lokal.");
+                }
+
                 $zip->addFile($sqlPath, $sqlFileName);
+                $zip->addFile($nasabahExcelPath, $nasabahExcelName);
+                $zip->addFile($transaksiExcelPath, $transaksiExcelName);
                 $zip->close();
             } else {
-                throw new \Exception("Gagal membuat file ZIP kompresi.");
+                throw new \Exception("Sistem gagal membuat file kompresi ZIP.");
             }
 
             $bytes = filesize($zipPath);
@@ -71,10 +87,12 @@ class BackupController extends Controller
                 'admin_id' => Auth::id(),
                 'file_size' => $fileSize,
                 'status' => 'Berhasil',
-                'keterangan' => 'Proses backup dan kompresi selesai dengan aman.'
+                'keterangan' => 'Paket backup lengkap (.sql dan .xlsx) berhasil diunduh.'
             ]);
 
-            File::delete($sqlPath);
+            Storage::disk('local')->delete('temp/' . $sqlFileName);
+            Storage::disk('local')->delete('temp/' . $nasabahExcelName);
+            Storage::disk('local')->delete('temp/' . $transaksiExcelName);
 
             return response()->download($zipPath)->deleteFileAfterSend(true);
 
@@ -86,7 +104,7 @@ class BackupController extends Controller
                 'keterangan' => substr($e->getMessage(), 0, 255)
             ]);
 
-            return back()->with('error', 'Gagal membuat backup: ' . $e->getMessage());
+            return back()->with('error', 'Gagal memproses pengamanan data: ' . $e->getMessage());
         }
     }
 }

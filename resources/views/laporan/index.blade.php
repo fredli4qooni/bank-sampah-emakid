@@ -77,6 +77,11 @@
                                     <span class="text-xs px-2.5 py-1 rounded-full font-bold uppercase border {{ $trx->status_validasi == 'valid' ? 'bg-green-100 text-green-800 border-green-200' : 'bg-blue-100 text-blue-800 border-blue-200' }}">
                                         {{ $trx->status_validasi }}
                                     </span>
+                                    @if($trx->catatan_validasi)
+                                        <div class="mt-2 text-[10px] leading-tight {{ str_contains($trx->catatan_validasi, '>10kg') ? 'text-red-600 font-bold' : 'text-gray-500 italic' }}">
+                                            {{ $trx->catatan_validasi }}
+                                        </div>
+                                    @endif
                                 </td>
                                 <td class="px-6 py-4 font-semibold text-gray-900 text-right">Rp {{ number_format($trx->total_nilai, 0, ',', '.') }}</td>
                             </tr>

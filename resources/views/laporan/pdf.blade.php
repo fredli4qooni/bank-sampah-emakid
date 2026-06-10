@@ -30,7 +30,11 @@
             font-size: 12px;
         }
 
-        table { border-collapse: collapse; margin-top: 15px; width: 100%; }
+        table {
+            border-collapse: collapse;
+            margin-top: 15px;
+            width: 100%;
+        }
 
         th,
         td {
@@ -47,8 +51,13 @@
             font-size: 10px;
         }
 
-        .text-right { text-align: right; }
-        .text-center { text-align: center; }
+        .text-right {
+            text-align: right;
+        }
+
+        .text-center {
+            text-align: center;
+        }
 
         .total-row {
             font-weight: bold;
@@ -59,7 +68,7 @@
             color: #059669;
             font-size: 13px;
         }
-        
+
         .badge {
             display: inline-block;
             background: #e5e7eb;
@@ -67,6 +76,18 @@
             border-radius: 4px;
             font-size: 9px;
             margin-top: 3px;
+        }
+
+        .catatan-merah {
+            color: #dc2626;
+            font-size: 8px;
+            font-style: italic;
+        }
+
+        .catatan-abu {
+            color: #6b7280;
+            font-size: 8px;
+            font-style: italic;
         }
     </style>
 </head>
@@ -110,7 +131,15 @@
                 </td>
                 <td>{{ $trx->nasabah->unit->nama_unit ?? '-' }}</td>
                 <td>{{ $trx->penimbang->name }}</td>
-                <td class="text-center">{{ strtoupper($trx->status_validasi) }}</td>
+                <td class="text-center">
+                    <strong>{{ strtoupper($trx->status_validasi) }}</strong>
+                    @if($trx->catatan_validasi)
+                    <br>
+                    <span class="{{ str_contains($trx->catatan_validasi, '>10kg') ? 'catatan-merah' : 'catatan-abu' }}">
+                        {{ $trx->catatan_validasi }}
+                    </span>
+                    @endif
+                </td>
                 <td class="text-right">{{ number_format($trx->total_nilai, 0, ',', '.') }}</td>
             </tr>
             @empty

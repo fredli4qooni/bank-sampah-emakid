@@ -22,9 +22,7 @@
             @if(Auth::user()->role === 'pengelola')
             <div class="mb-6 bg-blue-50 border border-blue-200 rounded-xl p-4 flex items-start gap-4 shadow-sm">
                 <div class="bg-blue-100 p-2 rounded-full text-blue-600 shrink-0">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                 </div>
                 <div>
                     <h3 class="text-blue-800 font-bold text-lg">Mode Lihat Saja (Read-Only)</h3>
@@ -35,9 +33,7 @@
 
             <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-6 flex flex-col sm:flex-row justify-between items-center gap-4">
                 <div class="font-bold text-gray-700 flex items-center gap-2">
-                    <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-                    </svg>
+                    <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" /></svg>
                     Filter Data
                 </div>
                 <form method="GET" action="{{ route('validasi.index') }}" class="flex items-center gap-3 w-full sm:w-auto">
@@ -82,12 +78,11 @@
                         <thead class="text-xs text-green-800 uppercase bg-green-50 border-b border-green-100">
                             <tr>
                                 <th class="px-6 py-4 font-bold">Tanggal</th>
-                                <th class="px-6 py-4 font-bold">Total Berat</th>
+                                <th class="px-6 py-4 font-bold">Total Berat Lapangan</th>
                                 <th class="px-6 py-4 font-bold text-center">Jml Transaksi</th>
-                                <th class="px-6 py-4 font-bold text-right">Total Nilai</th>
                                 <th class="px-6 py-4 font-bold text-center">Status</th>
                                 @if(Auth::user()->role === 'admin')
-                                <th class="px-6 py-4 font-bold text-center">Aksi (Validasi Semua)</th>
+                                <th class="px-6 py-4 font-bold text-center w-48">Validasi Gudang</th>
                                 @endif
                             </tr>
                         </thead>
@@ -96,14 +91,13 @@
                         <tbody x-data="{ expanded: false }" class="border-b border-gray-100">
                             <tr class="bg-white hover:bg-gray-50 transition-colors group cursor-pointer">
                                 <td @click="expanded = !expanded" class="px-6 py-4 font-black text-gray-900 flex items-center gap-2">
-                                    <svg class="w-4 h-4 text-gray-400 transform transition-transform" :class="{'rotate-90 text-green-600': expanded}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                                    </svg>
+                                    <svg class="w-4 h-4 text-gray-400 transform transition-transform" :class="{'rotate-90 text-green-600': expanded}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
                                     {{ \Carbon\Carbon::parse($row['tanggal'])->format('d M Y') }}
                                 </td>
-                                <td @click="expanded = !expanded" class="px-6 py-4 font-bold">{{ number_format($row['total_berat'], 2, ',', '.') }} kg</td>
+                                <td @click="expanded = !expanded" class="px-6 py-4 font-bold">
+                                    {{ number_format($row['total_berat'], 2, ',', '.') }} kg
+                                </td>
                                 <td @click="expanded = !expanded" class="px-6 py-4 text-center"><span class="bg-gray-100 text-gray-800 px-2.5 py-0.5 rounded-full font-bold">{{ $row['jml_transaksi'] }}</span></td>
-                                <td @click="expanded = !expanded" class="px-6 py-4 text-right font-bold text-gray-900">Rp {{ number_format($row['total_nilai'], 0, ',', '.') }}</td>
                                 <td @click="expanded = !expanded" class="px-6 py-4 text-center">
                                     @if($row['status_agregat'] == 'Semua Valid')
                                     <span class="bg-green-100 text-green-700 text-xs px-2.5 py-1 rounded-full font-bold">Semua Valid</span>
@@ -116,19 +110,23 @@
                                 @if(Auth::user()->role === 'admin')
                                 <td class="px-6 py-4 text-center">
                                     @if($row['id_transaksi_pending'] != '')
-                                    <form action="{{ route('validasi.bulk') }}" method="POST" onsubmit="return confirm(`Validasi massal SEMUA transaksi pending di tanggal ini?`);">
+                                    <form action="{{ route('validasi.bulk') }}" method="POST" class="flex flex-col gap-2" onsubmit="return confirm(`Pastikan angka timbangan gudang sudah benar. Saldo nasabah akan otomatis ditambahkan. Lanjutkan?`);">
                                         @csrf
                                         <input type="hidden" name="ids" value="{{ $row['id_transaksi_pending'] }}">
-                                        <button type="submit" class="text-xs bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-1.5 px-3 rounded shadow-sm">Validasi Pending</button>
+                                        <input type="hidden" name="total_berat_lapangan" value="{{ $row['total_berat_pending'] }}">
+                                        
+                                        <input type="number" name="berat_gudang" step="0.01" min="0" placeholder="Berat Gudang (kg)" title="Timbangan Gudang u/ {{ number_format($row['total_berat_pending'], 2) }}kg Lapangan" class="text-xs border-gray-300 focus:border-green-500 focus:ring focus:ring-green-200 rounded shadow-sm px-2 py-1.5 w-full text-center font-bold text-blue-800" required>
+                                        
+                                        <button type="submit" class="text-[11px] bg-green-600 hover:bg-green-700 text-white font-bold py-1.5 px-2 rounded shadow-sm w-full">Validasi Semua</button>
                                     </form>
                                     @else
-                                    <span class="text-xs text-gray-400 italic">Selesai</span>
+                                    <span class="text-xs text-gray-400 italic font-medium">Selesai Divalidasi</span>
                                     @endif
                                 </td>
                                 @endif
                             </tr>
                             <tr x-show="expanded" x-cloak class="bg-gray-50">
-                                <td colspan="{{ Auth::user()->role === 'admin' ? '6' : '5' }}" class="p-0 border-t border-gray-100">
+                                <td colspan="{{ Auth::user()->role === 'admin' ? '5' : '4' }}" class="p-0 border-t border-gray-100">
                                     <div class="px-10 py-4 bg-gray-50 border-l-4 border-green-500 shadow-inner">
                                         <table class="w-full text-xs text-left text-gray-500">
                                             <thead class="uppercase text-gray-400 border-b border-gray-200">
@@ -136,10 +134,10 @@
                                                     <th class="py-2">Waktu</th>
                                                     <th class="py-2">Nasabah</th>
                                                     <th class="py-2">Penimbang</th>
-                                                    <th class="py-2">Nilai</th>
-                                                    <th class="py-2">Status</th>
+                                                    <th class="py-2 text-right">Nilai</th>
+                                                    <th class="py-2 text-center">Status & Catatan Gudang</th>
                                                     @if(Auth::user()->role === 'admin')
-                                                    <th class="py-2 text-right">Cek Detail</th>
+                                                    <th class="py-2 text-right">Aksi</th>
                                                     @endif
                                                 </tr>
                                             </thead>
@@ -149,16 +147,22 @@
                                                     <td class="py-2 font-medium">{{ $trx->created_at->format('H:i') }}</td>
                                                     <td class="py-2 font-bold text-gray-800">{{ $trx->nasabah->nama }}</td>
                                                     <td class="py-2">{{ $trx->penimbang->name }}</td>
-                                                    <td class="py-2 font-bold text-gray-700">Rp {{ number_format($trx->total_nilai, 0, ',', '.') }}</td>
-                                                    <td class="py-2">
+                                                    <td class="py-2 font-bold text-gray-700 text-right">Rp {{ number_format($trx->total_nilai, 0, ',', '.') }}</td>
+                                                    <td class="py-2 text-center">
                                                         @if($trx->status_validasi == 'valid') <span class="text-green-600 font-bold">Valid</span>
                                                         @elseif($trx->status_validasi == 'terkoreksi') <span class="text-blue-600 font-bold">Terkoreksi</span>
                                                         @else <span class="text-yellow-600 font-bold">Pending</span> @endif
+                                                        
+                                                        @if($trx->catatan_validasi)
+                                                            <div class="mt-1 text-[10px] {{ str_contains($trx->catatan_validasi, '>10kg') ? 'text-red-600 font-bold' : 'text-gray-500' }}">
+                                                                {{ $trx->catatan_validasi }}
+                                                            </div>
+                                                        @endif
                                                     </td>
                                                     @if(Auth::user()->role === 'admin')
                                                     <td class="py-2 text-right">
                                                         @if($trx->status_validasi == 'pending')
-                                                        <a href="{{ route('validasi.show', $trx->id_transaksi) }}" class="text-blue-600 hover:text-blue-800 font-bold hover:underline">Periksa &rarr;</a>
+                                                        <a href="{{ route('transaksi.edit', $trx->id_transaksi) }}" class="text-blue-600 hover:text-blue-800 font-bold hover:underline">Edit/Koreksi &rarr;</a>
                                                         @endif
                                                     </td>
                                                     @endif
@@ -171,11 +175,7 @@
                             </tr>
                         </tbody>
                         @empty
-                        <tbody>
-                            <tr>
-                                <td colspan="{{ Auth::user()->role === 'admin' ? '6' : '5' }}" class="text-center py-8 text-gray-400 italic">Tidak ada data transaksi pada rentang tanggal tersebut.</td>
-                            </tr>
-                        </tbody>
+                        <tbody><tr><td colspan="{{ Auth::user()->role === 'admin' ? '5' : '4' }}" class="text-center py-8 text-gray-400 italic">Tidak ada data.</td></tr></tbody>
                         @endforelse
                     </table>
                 </div>
@@ -188,11 +188,10 @@
                             <tr>
                                 <th class="px-6 py-4 font-bold">Petugas Penimbang</th>
                                 <th class="px-6 py-4 font-bold">Tanggal</th>
-                                <th class="px-6 py-4 font-bold">Total Berat</th>
-                                <th class="px-6 py-4 font-bold text-center">Jml Transaksi</th>
+                                <th class="px-6 py-4 font-bold">Total Berat Lapangan</th>
                                 <th class="px-6 py-4 font-bold text-center">Status</th>
                                 @if(Auth::user()->role === 'admin')
-                                <th class="px-6 py-4 font-bold text-center">Aksi (Validasi Semua)</th>
+                                <th class="px-6 py-4 font-bold text-center w-48">Validasi Gudang</th>
                                 @endif
                             </tr>
                         </thead>
@@ -201,14 +200,13 @@
                         <tbody x-data="{ expanded: false }" class="border-b border-gray-100">
                             <tr class="bg-white hover:bg-gray-50 transition-colors group cursor-pointer">
                                 <td @click="expanded = !expanded" class="px-6 py-4 font-black text-gray-900 flex items-center gap-2">
-                                    <svg class="w-4 h-4 text-gray-400 transform transition-transform" :class="{'rotate-90 text-blue-600': expanded}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                                    </svg>
+                                    <svg class="w-4 h-4 text-gray-400 transform transition-transform" :class="{'rotate-90 text-blue-600': expanded}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
                                     {{ $row['nama_penimbang'] }}
                                 </td>
                                 <td @click="expanded = !expanded" class="px-6 py-4 font-medium">{{ \Carbon\Carbon::parse($row['tanggal'])->format('d M Y') }}</td>
-                                <td @click="expanded = !expanded" class="px-6 py-4 font-bold">{{ number_format($row['total_berat'], 2, ',', '.') }} kg</td>
-                                <td @click="expanded = !expanded" class="px-6 py-4 text-center"><span class="bg-gray-100 text-gray-800 px-2.5 py-0.5 rounded-full font-bold">{{ $row['jml_transaksi'] }}</span></td>
+                                <td @click="expanded = !expanded" class="px-6 py-4 font-bold">
+                                    {{ number_format($row['total_berat'], 2, ',', '.') }} kg
+                                </td>
                                 <td @click="expanded = !expanded" class="px-6 py-4 text-center">
                                     @if($row['status_agregat'] == 'Semua Valid')
                                     <span class="bg-green-100 text-green-700 text-xs px-2.5 py-1 rounded-full font-bold">Semua Valid</span>
@@ -221,29 +219,33 @@
                                 @if(Auth::user()->role === 'admin')
                                 <td class="px-6 py-4 text-center">
                                     @if($row['id_transaksi_pending'] != '')
-                                    <form action="{{ route('validasi.bulk') }}" method="POST" onsubmit="return confirm(`Validasi massal SEMUA transaksi pending milik {{ $row['nama_penimbang'] }} di tanggal ini?`);">
+                                    <form action="{{ route('validasi.bulk') }}" method="POST" class="flex flex-col gap-2" onsubmit="return confirm(`Pastikan angka timbangan gudang sudah benar. Saldo nasabah akan otomatis ditambahkan. Lanjutkan?`);">
                                         @csrf
                                         <input type="hidden" name="ids" value="{{ $row['id_transaksi_pending'] }}">
-                                        <button type="submit" class="text-xs bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-1.5 px-3 rounded shadow-sm">Validasi Pending</button>
+                                        <input type="hidden" name="total_berat_lapangan" value="{{ $row['total_berat_pending'] }}">
+                                        
+                                        <input type="number" name="berat_gudang" step="0.01" min="0" placeholder="Berat Gudang (kg)" title="Timbangan Gudang u/ {{ number_format($row['total_berat_pending'], 2) }}kg Lapangan" class="text-xs border-gray-300 focus:border-green-500 focus:ring focus:ring-green-200 rounded shadow-sm px-2 py-1.5 w-full text-center font-bold text-blue-800" required>
+                                        
+                                        <button type="submit" class="text-[11px] bg-green-600 hover:bg-green-700 text-white font-bold py-1.5 px-2 rounded shadow-sm w-full">Validasi Petugas Ini</button>
                                     </form>
                                     @else
-                                    <span class="text-xs text-gray-400 italic">Selesai</span>
+                                    <span class="text-xs text-gray-400 italic font-medium">Selesai Divalidasi</span>
                                     @endif
                                 </td>
                                 @endif
                             </tr>
                             <tr x-show="expanded" x-cloak class="bg-gray-50">
-                                <td colspan="{{ Auth::user()->role === 'admin' ? '6' : '5' }}" class="p-0 border-t border-gray-100">
+                                <td colspan="{{ Auth::user()->role === 'admin' ? '5' : '4' }}" class="p-0 border-t border-gray-100">
                                     <div class="px-10 py-4 bg-gray-50 border-l-4 border-blue-500 shadow-inner">
                                         <table class="w-full text-xs text-left text-gray-500">
                                             <thead class="uppercase text-gray-400 border-b border-gray-200">
                                                 <tr>
                                                     <th class="py-2">Waktu</th>
                                                     <th class="py-2">Nasabah</th>
-                                                    <th class="py-2">Nilai</th>
-                                                    <th class="py-2">Status</th>
+                                                    <th class="py-2 text-right">Nilai</th>
+                                                    <th class="py-2 text-center">Status & Catatan Gudang</th>
                                                     @if(Auth::user()->role === 'admin')
-                                                    <th class="py-2 text-right">Cek Detail</th>
+                                                    <th class="py-2 text-right">Aksi</th>
                                                     @endif
                                                 </tr>
                                             </thead>
@@ -252,16 +254,22 @@
                                                 <tr class="border-b border-gray-100 last:border-0 hover:bg-gray-100 transition-colors">
                                                     <td class="py-2 font-medium">{{ $trx->created_at->format('H:i') }}</td>
                                                     <td class="py-2 font-bold text-gray-800">{{ $trx->nasabah->nama }}</td>
-                                                    <td class="py-2 font-bold text-gray-700">Rp {{ number_format($trx->total_nilai, 0, ',', '.') }}</td>
-                                                    <td class="py-2">
+                                                    <td class="py-2 font-bold text-gray-700 text-right">Rp {{ number_format($trx->total_nilai, 0, ',', '.') }}</td>
+                                                    <td class="py-2 text-center">
                                                         @if($trx->status_validasi == 'valid') <span class="text-green-600 font-bold">Valid</span>
                                                         @elseif($trx->status_validasi == 'terkoreksi') <span class="text-blue-600 font-bold">Terkoreksi</span>
                                                         @else <span class="text-yellow-600 font-bold">Pending</span> @endif
+                                                        
+                                                        @if($trx->catatan_validasi)
+                                                            <div class="mt-1 text-[10px] {{ str_contains($trx->catatan_validasi, '>10kg') ? 'text-red-600 font-bold' : 'text-gray-500' }}">
+                                                                {{ $trx->catatan_validasi }}
+                                                            </div>
+                                                        @endif
                                                     </td>
                                                     @if(Auth::user()->role === 'admin')
                                                     <td class="py-2 text-right">
                                                         @if($trx->status_validasi == 'pending')
-                                                        <a href="{{ route('validasi.show', $trx->id_transaksi) }}" class="text-blue-600 hover:text-blue-800 font-bold hover:underline">Periksa &rarr;</a>
+                                                        <a href="{{ route('transaksi.edit', $trx->id_transaksi) }}" class="text-blue-600 hover:text-blue-800 font-bold hover:underline">Edit/Koreksi &rarr;</a>
                                                         @endif
                                                     </td>
                                                     @endif
@@ -274,11 +282,7 @@
                             </tr>
                         </tbody>
                         @empty
-                        <tbody>
-                            <tr>
-                                <td colspan="{{ Auth::user()->role === 'admin' ? '6' : '5' }}" class="text-center py-8 text-gray-400 italic">Tidak ada data transaksi pada rentang tanggal tersebut.</td>
-                            </tr>
-                        </tbody>
+                        <tbody><tr><td colspan="{{ Auth::user()->role === 'admin' ? '5' : '4' }}" class="text-center py-8 text-gray-400 italic">Tidak ada data.</td></tr></tbody>
                         @endforelse
                     </table>
                 </div>

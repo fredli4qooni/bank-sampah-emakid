@@ -15,8 +15,9 @@ class Transaksi extends Model
     protected $fillable = [
         'id_nasabah',
         'id_user',
-        'status_validasi',
         'total_nilai',
+        'status_validasi',
+        'catatan_validasi',
     ];
 
     public function nasabah()
