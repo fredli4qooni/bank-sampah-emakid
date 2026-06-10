@@ -11,10 +11,11 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ChatbotController;
+use App\Http\Controllers\UnitController;
+use App\Http\Controllers\FaqController;
+use App\Http\Controllers\PublicController;
 
-Route::get('/', function () {
-    return redirect()->route('login');
-});
+Route::get('/', [PublicController::class, 'index'])->name('home');
 
 Route::get('/dashboard', function () {
     $url = match (Auth::user()->role) {
@@ -43,16 +44,23 @@ Route::middleware(['auth', 'role:admin,penimbang'])->group(function () {
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/dashboard', [DashboardController::class, 'admin'])->name('admin.dashboard');
 
+    Route::resource('units', UnitController::class);
+
     Route::resource('jenis-sampah', JenisSampahController::class);
 
+    Route::post('validasi/bulk', [App\Http\Controllers\ValidasiController::class, 'bulkProcess'])->name('validasi.bulk');
+    Route::post('/validasi/{id}/process', [ValidasiController::class, 'process'])->name('validasi.process');
     Route::get('/validasi', [ValidasiController::class, 'index'])->name('validasi.index');
     Route::get('/validasi/{id}', [ValidasiController::class, 'show'])->name('validasi.show');
-    Route::post('/validasi/{id}/process', [ValidasiController::class, 'process'])->name('validasi.process');
 
     Route::post('/chatbot/query', [ChatbotController::class, 'query'])
          ->middleware('throttle:60,1')
          ->name('chatbot.query');
 
+    Route::get('/backup', [App\Http\Controllers\BackupController::class, 'index'])->name('backup.index');
+    Route::post('/backup/process', [App\Http\Controllers\BackupController::class, 'process'])->name('backup.process');
+
+    Route::resource('faq', FaqController::class);
     Route::resource('users', UserController::class);
 });
 
@@ -68,6 +76,8 @@ Route::middleware(['auth', 'role:pengelola'])->group(function () {
 Route::middleware(['auth', 'role:admin,pengelola'])->group(function () {
     Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
     Route::get('/laporan/pdf', [LaporanController::class, 'exportPdf'])->name('laporan.pdf');
+    Route::get('/validasi', [ValidasiController::class, 'index'])->name('validasi.index');
+    Route::get('/validasi/{id}', [ValidasiController::class, 'show'])->name('validasi.show');
 });
 
 require __DIR__.'/auth.php';

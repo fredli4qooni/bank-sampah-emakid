@@ -22,13 +22,11 @@ class JenisSampahController extends Controller
     {
         $request->validate([
             'nama_sampah' => 'required|string|max:50',
-            'satuan' => 'required|in:kg,liter',
             'harga_per_kg' => 'required|numeric|min:0',
         ]);
 
         JenisSampah::create([
             'nama_sampah' => $request->nama_sampah,
-            'satuan' => $request->satuan,
             'harga_per_kg' => $request->harga_per_kg,
             'status_aktif' => true,
         ]);
@@ -45,14 +43,12 @@ class JenisSampahController extends Controller
     {
         $request->validate([
             'nama_sampah' => 'required|string|max:50',
-            'satuan' => 'required|in:kg,liter',
             'harga_per_kg' => 'required|numeric|min:0',
             'status_aktif' => 'required|boolean',
         ]);
 
         $jenisSampah->update([
             'nama_sampah' => $request->nama_sampah,
-            'satuan' => $request->satuan,
             'harga_per_kg' => $request->harga_per_kg,
             'status_aktif' => $request->status_aktif,
         ]);

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Nasabah;
+use App\Models\Unit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
@@ -10,14 +11,15 @@ class NasabahController extends Controller
 {
     public function index()
     {
-        $nasabah = Nasabah::orderBy('id_nasabah', 'desc')->get();
+        $nasabah = Nasabah::with('unit')->orderBy('id_nasabah', 'desc')->get();
         return view('nasabah.index', compact('nasabah'));
     }
 
     public function create()
     {
         Gate::authorize('isAdmin');
-        return view('nasabah.create');
+        $units = Unit::where('status', 'aktif')->orderBy('nama_unit', 'asc')->get();
+        return view('nasabah.create', compact('units'));
     }
 
     public function store(Request $request)
@@ -29,6 +31,7 @@ class NasabahController extends Controller
             'no_hp' => 'required|string|max:20',
             'alamat' => 'nullable|string',
             'kecamatan' => 'nullable|string|max:50',
+            'id_unit' => 'required|exists:units,id_unit',
         ]);
 
         $lastNasabah = Nasabah::orderBy('id_nasabah', 'desc')->first();
@@ -42,6 +45,7 @@ class NasabahController extends Controller
             'kecamatan' => $request->kecamatan,
             'no_hp' => $request->no_hp,
             'saldo' => 0.00,
+            'id_unit' => $request->id_unit,
         ]);
 
         return redirect()->route('nasabah.index')->with('success', 'Nasabah berhasil didaftarkan.');
@@ -50,7 +54,8 @@ class NasabahController extends Controller
     public function edit(Nasabah $nasabah)
     {
         Gate::authorize('isAdmin');
-        return view('nasabah.edit', compact('nasabah'));
+        $units = Unit::where('status', 'aktif')->orderBy('nama_unit', 'asc')->get();
+        return view('nasabah.edit', compact('nasabah', 'units'));
     }
 
     public function update(Request $request, Nasabah $nasabah)
@@ -62,6 +67,7 @@ class NasabahController extends Controller
             'no_hp' => 'required|string|max:20',
             'alamat' => 'nullable|string',
             'kecamatan' => 'nullable|string|max:50',
+            'id_unit' => 'required|exists:units,id_unit',
         ]);
 
         $nasabah->update([
@@ -69,6 +75,7 @@ class NasabahController extends Controller
             'alamat' => $request->alamat,
             'kecamatan' => $request->kecamatan,
             'no_hp' => $request->no_hp,
+            'id_unit' => $request->id_unit,
         ]);
 
         return redirect()->route('nasabah.index')->with('success', 'Data nasabah berhasil diperbarui.');

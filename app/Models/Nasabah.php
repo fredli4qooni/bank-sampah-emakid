@@ -4,11 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Nasabah extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
 
     protected $table = 'nasabah';
     protected $primaryKey = 'id_nasabah';
@@ -20,5 +19,11 @@ class Nasabah extends Model
         'kecamatan',
         'no_hp',
         'saldo',
+        'id_unit',
     ];
+
+    public function unit()
+    {
+        return $this->belongsTo(Unit::class, 'id_unit', 'id_unit');
+    }
 }

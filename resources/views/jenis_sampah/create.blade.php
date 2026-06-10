@@ -23,17 +23,8 @@
                         @error('nama_sampah') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
                     </div>
 
-                    <div class="mb-5">
-                        <label class="block text-gray-700 text-sm font-bold mb-2">Satuan <span class="text-red-500">*</span></label>
-                        <select name="satuan" class="w-full border-gray-300 focus:border-green-500 focus:ring focus:ring-green-200 rounded-lg shadow-sm transition-colors" required>
-                            <option value="kg">Kilogram (kg)</option>
-                            <option value="liter">Liter (ltr)</option>
-                        </select>
-                        @error('satuan') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
-                    </div>
-
                     <div class="mb-8">
-                        <label class="block text-gray-700 text-sm font-bold mb-2">Harga per Satuan (Rp) <span class="text-red-500">*</span></label>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Harga per kg (Rp) <span class="text-red-500">*</span></label>
                         <div class="relative">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <span class="text-gray-500 font-bold sm:text-sm">Rp</span>

@@ -29,8 +29,7 @@
                             <thead class="text-xs text-green-800 uppercase bg-green-50 border-b border-green-100">
                                 <tr>
                                     <th scope="col" class="px-6 py-4 font-bold">Nama Sampah</th>
-                                    <th scope="col" class="px-6 py-4 font-bold">Satuan</th>
-                                    <th scope="col" class="px-6 py-4 font-bold">Harga / Satuan</th>
+                                    <th scope="col" class="px-6 py-4 font-bold">Harga / kg</th>
                                     <th scope="col" class="px-6 py-4 font-bold text-center">Status</th>
                                     <th scope="col" class="px-6 py-4 font-bold text-center">Aksi</th>
                                 </tr>
@@ -39,7 +38,6 @@
                                 @forelse ($jenisSampah as $item)
                                     <tr class="bg-white hover:bg-gray-50 transition-colors">
                                         <td class="px-6 py-4 font-bold text-gray-800">{{ $item->nama_sampah }}</td>
-                                        <td class="px-6 py-4 font-semibold uppercase text-gray-500">{{ $item->satuan }}</td>
                                         <td class="px-6 py-4 font-semibold text-gray-900">Rp {{ number_format($item->harga_per_kg, 0, ',', '.') }}</td>
                                         <td class="px-6 py-4 text-center">
                                             @if($item->status_aktif)
@@ -62,7 +60,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="5" class="px-6 py-8 text-center text-gray-400">Belum ada data jenis sampah.</td>
+                                        <td colspan="4" class="px-6 py-8 text-center text-gray-400">Belum ada data jenis sampah.</td>
                                     </tr>
                                 @endforelse
                             </tbody>
