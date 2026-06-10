@@ -39,7 +39,8 @@ class BackupController extends Controller
             $zipPath = $tempDir . '/' . $zipFileName;
 
             $passwordParam = $dbPass ? "-p\"{$dbPass}\"" : "";
-            $command = "mysqldump -h {$dbHost} -u {$dbUser} {$passwordParam} {$dbName} > \"{$sqlPath}\"";
+            $dumpPath = env('MYSQLDUMP_PATH', 'mysqldump'); 
+            $command = "\"{$dumpPath}\" -h {$dbHost} -u {$dbUser} {$passwordParam} {$dbName} > \"{$sqlPath}\"";
 
             $output = [];
             $returnVar = 0;

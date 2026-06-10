@@ -64,7 +64,7 @@
 
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-xl border border-gray-100">
                 <div class="p-6">
-                    <h3 class="text-lg font-bold mb-4 text-gray-800">10 Transaksi Terbaru</h3>
+                    <h3 class="text-lg font-bold mb-4 text-gray-800">Transaksi Terbaru</h3>
                     <div class="overflow-x-auto rounded-lg border border-gray-200">
                         <table class="w-full text-sm text-left text-gray-600">
                             <thead class="text-xs text-green-800 uppercase bg-green-50 border-b border-gray-200">
