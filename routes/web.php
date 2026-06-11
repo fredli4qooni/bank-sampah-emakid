@@ -17,6 +17,9 @@ use App\Http\Controllers\PublicController;
 use App\Http\Controllers\PenarikanController;
 
 Route::get('/', [PublicController::class, 'index'])->name('home');
+Route::get('/tentang-kami', [PublicController::class, 'tentangKami'])->name('tentang-kami');
+Route::get('/program', [PublicController::class, 'program'])->name('program');
+Route::get('/berita', [PublicController::class, 'berita'])->name('berita');
 
 Route::get('/dashboard', function () {
     $url = match (Auth::user()->role) {
