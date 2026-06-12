@@ -9,9 +9,20 @@ use App\Models\JenisSampah;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class TransaksiController extends Controller
 {
+    public function index()
+    {
+        $transaksi = Transaksi::with(['nasabah'])
+            ->where('id_user', Auth::id())
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('transaksi.index', compact('transaksi'));
+    }
+
     public function create()
     {
         $nasabah = Nasabah::orderBy('nama', 'asc')->get();
@@ -68,7 +79,12 @@ class TransaksiController extends Controller
 
             DB::commit();
 
-            return redirect()->route('transaksi.create')->with('success', 'Transaksi berhasil disimpan dan menunggu validasi Admin.');
+            return redirect()->route('transaksi.create')
+                ->with('success', 'Transaksi berhasil disimpan dan menunggu validasi Admin.')
+                ->with('last_transaction_id', $transaksi->id_transaksi)
+                ->with('last_transaction_no_hp', $transaksi->nasabah->no_hp)
+                ->with('last_transaction_nama', $transaksi->nasabah->nama)
+                ->with('last_transaction_nilai', $transaksi->total_nilai);
 
         } catch (\Exception $e) {
             DB::rollBack();
@@ -132,5 +148,18 @@ class TransaksiController extends Controller
             DB::rollBack();
             return back()->with('error', 'Terjadi kesalahan sistem: ' . $e->getMessage());
         }
+    }
+
+    public function cetakStruk(int $id_transaksi)
+    {
+        $transaksi = Transaksi::with(['nasabah', 'penimbang', 'detail.jenisSampah'])->findOrFail($id_transaksi);
+        
+        // Ukuran kertas thermal 58mm (width = 58mm = ~164pt)
+        $customPaper = array(0, 0, 164, 400); 
+
+        $pdf = Pdf::loadView('transaksi.struk', compact('transaksi'))
+                  ->setPaper($customPaper);
+
+        return $pdf->stream('Struk_Setoran_' . $transaksi->id_transaksi . '.pdf');
     }
 }

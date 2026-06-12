@@ -20,7 +20,7 @@
             @endif
 
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-xl border border-gray-100 p-6 lg:p-8">
-                <form action="{{ route('penarikan.store') }}" method="POST" onsubmit="return confirm('Apakah data pencairan sudah benar? Saldo nasabah akan langsung terpotong.')">
+                <form action="{{ route('penarikan.store') }}" method="POST" enctype="multipart/form-data" onsubmit="return confirm('Apakah data pencairan sudah benar? Saldo nasabah akan langsung terpotong.')">
                     @csrf
                     
                     <div class="mb-5">
@@ -47,13 +47,25 @@
 
                     <div class="mb-5">
                         <label class="block text-gray-700 text-sm font-bold mb-2">Metode Pencairan <span class="text-red-500">*</span></label>
-                        <select name="metode" class="w-full border-gray-300 focus:border-green-500 focus:ring focus:ring-green-200 rounded-lg shadow-sm transition-colors" required>
+                        <select name="metode" x-model="metodeInput" class="w-full border-gray-300 focus:border-green-500 focus:ring focus:ring-green-200 rounded-lg shadow-sm transition-colors" required>
                             <option value="Tunai">Uang Tunai</option>
                             <option value="Transfer Bank">Transfer Bank</option>
                             <option value="E-Wallet (Dana/OVO/GoPay)">E-Wallet (Dana/OVO/GoPay)</option>
                             <option value="Token Listrik">Pulsa / Token Listrik</option>
                             <option value="Lainnya">Lainnya</option>
                         </select>
+                    </div>
+
+                    <div x-show="metodeInput === 'Token Listrik'" x-cloak class="mb-5 bg-yellow-50 p-4 rounded-xl border border-yellow-200 animate-fade-in-down">
+                        <label class="block text-yellow-800 text-sm font-bold mb-2">Nomor Token / Struk (20 Digit) <span class="text-red-500">*</span></label>
+                        <input type="text" name="nomor_token" value="{{ old('nomor_token') }}" class="w-full border-yellow-300 focus:border-yellow-500 focus:ring focus:ring-yellow-200 rounded-lg shadow-sm font-mono tracking-widest text-lg" placeholder="0000-0000-0000-0000-0000">
+                        <p class="text-xs text-yellow-600 mt-1">Masukkan kode token listrik di sini agar tersimpan dan bisa dicetak untuk nasabah.</p>
+                    </div>
+
+                    <div x-show="metodeInput === 'Transfer Bank' || metodeInput === 'E-Wallet (Dana/OVO/GoPay)'" x-cloak class="mb-5 bg-blue-50 p-4 rounded-xl border border-blue-200 animate-fade-in-down">
+                        <label class="block text-blue-800 text-sm font-bold mb-2">Upload Bukti Transfer <span class="text-red-500">*</span></label>
+                        <input type="file" name="bukti_transfer" accept="image/*" class="w-full border-blue-300 focus:border-blue-500 focus:ring focus:ring-blue-200 rounded-lg shadow-sm bg-white p-2">
+                        <p class="text-xs text-blue-600 mt-1">Wajib mengunggah *screenshot* atau foto bukti transfer ke rekening/ewallet nasabah.</p>
                     </div>
 
                     <div class="mb-8">
@@ -80,6 +92,7 @@
                     selectedNasabah: "",
                     currentSaldo: 0,
                     nominalInput: "",
+                    metodeInput: "Tunai",
 
                     get isNominalExceed() {
                         return Number(this.nominalInput) > Number(this.currentSaldo);
@@ -101,5 +114,14 @@
                 }));
             });
         </script>
+        <style>
+            .animate-fade-in-down {
+                animation: fadeInDown 0.3s ease-out;
+            }
+            @keyframes fadeInDown {
+                0% { opacity: 0; transform: translateY(-10px); }
+                100% { opacity: 1; transform: translateY(0); }
+            }
+        </style>
     </x-slot>
 </x-app-layout>

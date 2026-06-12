@@ -88,4 +88,52 @@ class NasabahController extends Controller
 
         return redirect()->route('nasabah.index')->with('success', 'Nasabah berhasil dihapus.');
     }
+
+    public function cetakBuku(Nasabah $nasabah)
+    {
+        $transaksi = \App\Models\Transaksi::where('id_nasabah', $nasabah->id_nasabah)
+            ->where('status_validasi', 'valid')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'tanggal' => $item->created_at,
+                    'jenis' => 'Setoran',
+                    'keterangan' => 'Setoran Sampah (#' . $item->id_transaksi . ')',
+                    'debit' => 0,
+                    'kredit' => $item->total_nilai,
+                ];
+            });
+
+        $penarikan = \App\Models\PenarikanSaldo::where('id_nasabah', $nasabah->id_nasabah)
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'tanggal' => $item->created_at,
+                    'jenis' => 'Penarikan',
+                    'keterangan' => 'Penarikan ' . $item->metode . ' (#' . $item->id_penarikan . ')',
+                    'debit' => $item->nominal,
+                    'kredit' => 0,
+                ];
+            });
+
+        $mutasi = $transaksi->concat($penarikan)->sortBy('tanggal');
+
+        $mutasiWithSaldo = [];
+        $saldo = 0;
+        foreach ($mutasi as $m) {
+            $saldo += $m['kredit'];
+            $saldo -= $m['debit'];
+            $mutasiWithSaldo[] = [
+                'tanggal' => $m['tanggal'],
+                'jenis' => $m['jenis'],
+                'keterangan' => $m['keterangan'],
+                'debit' => $m['debit'],
+                'kredit' => $m['kredit'],
+                'saldo' => $saldo,
+            ];
+        }
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('nasabah.buku_tabungan', compact('nasabah', 'mutasiWithSaldo'));
+        return $pdf->stream('Buku_Tabungan_' . $nasabah->no_rekening . '.pdf');
+    }
 }

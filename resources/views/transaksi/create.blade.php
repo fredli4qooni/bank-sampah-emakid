@@ -10,12 +10,22 @@
             
             @if(session('success'))
                 <div id="success-panel" class="mb-6 bg-white border-2 border-green-500 rounded-2xl shadow-xl overflow-hidden animate-fade-in-down">
-                    <div class="bg-green-500 px-6 py-4 flex items-center gap-3 text-white">
-                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                        <div>
-                            <h3 class="text-lg font-black">Transaksi Berhasil Disimpan!</h3>
-                            <p class="text-green-100 text-sm font-medium">{{ session('success') }}</p>
+                    <div class="bg-green-500 px-6 py-4 flex items-center justify-between text-white">
+                        <div class="flex items-center gap-3">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            <div>
+                                <h3 class="text-lg font-black">Transaksi Berhasil Disimpan!</h3>
+                                <p class="text-green-100 text-sm font-medium">{{ session('success') }}</p>
+                            </div>
                         </div>
+                        @if(session('last_transaction_id'))
+                        <div class="flex gap-2">
+                            <a href="{{ route('transaksi.index') }}" class="bg-white text-green-700 hover:bg-green-50 font-bold py-2 px-4 rounded-lg shadow-sm text-sm flex items-center gap-2 transition-colors">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>
+                                Buka Riwayat Setoran Saya
+                            </a>
+                        </div>
+                        @endif
                     </div>
                     <div class="p-6 bg-green-50 flex flex-col sm:flex-row gap-4 items-center justify-between border-t border-green-100">
                         <p class="text-gray-600 font-medium text-sm text-center sm:text-left">Apa yang ingin Anda lakukan selanjutnya?</p>

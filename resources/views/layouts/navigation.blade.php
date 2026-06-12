@@ -22,11 +22,18 @@
             <p class="px-4 pt-4 pb-2 text-xs font-bold text-gray-400 uppercase tracking-wider">Operasional Lapangan</p>
 
             @if(Auth::user()->role === 'penimbang')
-            <a href="{{ route('transaksi.create') }}" class="flex items-center px-4 py-3 rounded-r-full {{ request()->routeIs('transaksi.*') ? 'bg-green-50 text-green-700 font-bold border-l-4 border-green-600' : 'text-gray-500 hover:bg-green-50 hover:text-green-700 transition-colors' }}">
+            <a href="{{ route('transaksi.create') }}" class="flex items-center px-4 py-3 rounded-r-full {{ request()->routeIs('transaksi.create') ? 'bg-green-50 text-green-700 font-bold border-l-4 border-green-600' : 'text-gray-500 hover:bg-green-50 hover:text-green-700 transition-colors' }}">
                 <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                 </svg>
                 <span>Input Setoran</span>
+            </a>
+            
+            <a href="{{ route('transaksi.index') }}" class="flex items-center px-4 py-3 rounded-r-full {{ request()->routeIs('transaksi.index') ? 'bg-green-50 text-green-700 font-bold border-l-4 border-green-600' : 'text-gray-500 hover:bg-green-50 hover:text-green-700 transition-colors' }}">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+                <span>Riwayat Setoran Saya</span>
             </a>
             @endif
 
@@ -46,9 +53,9 @@
                 <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <span>Validasi Transaksi</span>
+                <span>Validasi & Koreksi</span>
             </a>
-
+            
             <a href="{{ route('jenis-sampah.index') }}" class="flex items-center px-4 py-3 rounded-r-full {{ request()->routeIs('jenis-sampah.*') ? 'bg-green-50 text-green-700 font-bold border-l-4 border-green-600' : 'text-gray-500 hover:bg-green-50 hover:text-green-700 transition-colors' }}">
                 <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
@@ -67,7 +74,7 @@
                 <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
                 </svg>
-                <span>Penarikan Saldo</span>
+                <span>Riwayat Penarikan</span>
             </a>
 
             <a href="{{ route('units.index') }}" class="flex items-center px-4 py-3 rounded-r-full {{ request()->routeIs('units.*') ? 'bg-green-50 text-green-700 font-bold border-l-4 border-green-600' : 'text-gray-500 hover:bg-green-50 hover:text-green-700 transition-colors' }}">
@@ -89,6 +96,13 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 <span>Konten FAQ Publik</span>
+            </a>
+
+            <a href="{{ route('chatbot.setting') }}" class="flex items-center px-4 py-3 rounded-r-full {{ request()->routeIs('chatbot.setting*') ? 'bg-green-50 text-green-700 font-bold border-l-4 border-green-600' : 'text-gray-500 hover:bg-green-50 hover:text-green-700 transition-colors' }}">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                </svg>
+                <span>Pengaturan Chatbot</span>
             </a>
             @endcan
 

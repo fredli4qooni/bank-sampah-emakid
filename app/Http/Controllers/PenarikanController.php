@@ -32,12 +32,19 @@ class PenarikanController extends Controller
             'nominal' => 'required|numeric|min:100',
             'metode' => 'required|in:Tunai,Transfer Bank,E-Wallet (Dana/OVO/GoPay),Token Listrik,Lainnya',
             'keterangan' => 'nullable|string|max:255',
+            'nomor_token' => 'nullable|string|max:50|required_if:metode,Token Listrik',
+            'bukti_transfer' => 'nullable|image|max:2048|required_if:metode,Transfer Bank|required_if:metode,E-Wallet (Dana/OVO/GoPay)',
         ]);
 
         $nasabah = Nasabah::findOrFail($request->id_nasabah);
 
         if ($request->nominal > $nasabah->saldo) {
             return back()->withInput()->with('error', 'Gagal: Nominal penarikan (Rp ' . number_format($request->nominal, 0, ',', '.') . ') melebihi sisa saldo nasabah (Rp ' . number_format($nasabah->saldo, 0, ',', '.') . ').');
+        }
+
+        $buktiPath = null;
+        if ($request->hasFile('bukti_transfer')) {
+            $buktiPath = $request->file('bukti_transfer')->store('bukti_transfer', 'public');
         }
 
         DB::beginTransaction();
@@ -48,6 +55,9 @@ class PenarikanController extends Controller
                 'nominal' => $request->nominal,
                 'metode' => $request->metode,
                 'keterangan' => $request->keterangan,
+                'nomor_token' => $request->nomor_token,
+                'bukti_transfer' => $buktiPath,
+                'status' => 'Approved'
             ]);
 
             $nasabah->decrement('saldo', $request->nominal);

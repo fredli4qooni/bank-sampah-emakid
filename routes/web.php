@@ -15,6 +15,7 @@ use App\Http\Controllers\UnitController;
 use App\Http\Controllers\FaqController;
 use App\Http\Controllers\PublicController;
 use App\Http\Controllers\PenarikanController;
+use App\Http\Controllers\ChatbotSettingController;
 
 Route::get('/', [PublicController::class, 'index'])->name('home');
 Route::get('/tentang-kami', [PublicController::class, 'tentangKami'])->name('tentang-kami');
@@ -40,9 +41,12 @@ Route::middleware('auth')->group(function () {
 
 Route::middleware(['auth', 'role:admin,penimbang'])->group(function () {
     Route::resource('nasabah', NasabahController::class);
-    
+    Route::get('/nasabah/{nasabah}/cetak', [NasabahController::class, 'cetakBuku'])->name('nasabah.cetak');
+
+    Route::get('/transaksi', [TransaksiController::class, 'index'])->name('transaksi.index');
     Route::get('/transaksi/input', [TransaksiController::class, 'create'])->name('transaksi.create');
     Route::post('/transaksi/input', [TransaksiController::class, 'store'])->name('transaksi.store');
+    Route::get('/transaksi/{id}/cetak', [TransaksiController::class, 'cetakStruk'])->name('transaksi.cetak');
 });
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
@@ -56,10 +60,18 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::post('/validasi/{id}/process', [ValidasiController::class, 'process'])->name('validasi.process');
     Route::get('/validasi', [ValidasiController::class, 'index'])->name('validasi.index');
     Route::get('/validasi/{id}', [ValidasiController::class, 'show'])->name('validasi.show');
+    Route::get('/validasi/{id}/koreksi', [\App\Http\Controllers\ValidasiController::class, 'koreksi'])->name('validasi.koreksi');
+    Route::put('/validasi/{id}/koreksi', [\App\Http\Controllers\ValidasiController::class, 'updateKoreksi'])->name('validasi.update_koreksi');
 
     Route::post('/chatbot/query', [ChatbotController::class, 'query'])
-         ->middleware('throttle:60,1')
-         ->name('chatbot.query');
+        ->middleware('throttle:60,1')
+        ->name('chatbot.query');
+
+    Route::get('/pengaturan-chatbot', [ChatbotSettingController::class, 'index'])->name('chatbot.setting');
+    Route::post('/pengaturan-chatbot', [ChatbotSettingController::class, 'update'])->name('chatbot.setting.update');
+    Route::post('/pengaturan-chatbot/rule', [ChatbotSettingController::class, 'storeRule'])->name('chatbot.rule.store');
+    Route::put('/pengaturan-chatbot/rule/{id}', [ChatbotSettingController::class, 'updateRule'])->name('chatbot.rule.update');
+    Route::delete('/pengaturan-chatbot/rule/{id}', [ChatbotSettingController::class, 'destroyRule'])->name('chatbot.rule.destroy');
 
     Route::get('/backup', [App\Http\Controllers\BackupController::class, 'index'])->name('backup.index');
     Route::post('/backup/process', [App\Http\Controllers\BackupController::class, 'process'])->name('backup.process');
@@ -91,4 +103,4 @@ Route::middleware(['auth', 'role:admin,pengelola'])->group(function () {
     Route::get('/validasi/{id}', [ValidasiController::class, 'show'])->name('validasi.show');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

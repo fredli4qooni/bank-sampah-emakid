@@ -18,6 +18,9 @@ class PenarikanSaldo extends Model
         'nominal',
         'metode',
         'keterangan',
+        'nomor_token',
+        'bukti_transfer',
+        'status',
     ];
 
     public function nasabah()

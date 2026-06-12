@@ -329,6 +329,12 @@ class ChatbotService
 
     private function handleSapaan(string $input, string $keyword)
     {
+        $setting = \App\Models\ChatbotSetting::first();
+        
+        if ($setting && $setting->welcome_message) {
+            return $setting->welcome_message;
+        }
+
         return "Halo, Admin! Chatbot Assistant siap. Data apa yang ingin Anda akses dengan cepat hari ini?";
     }
 }
