@@ -22,7 +22,7 @@
                 <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 relative overflow-hidden">
                     <div class="absolute top-0 right-0 w-2 h-full bg-yellow-400"></div>
                     <h3 class="text-gray-500 text-xs font-bold uppercase tracking-wider">Volume Hari Ini</h3>
-                    <p class="text-3xl font-black text-gray-800 mt-2">{{ number_format($volumeHariIni, 2, ',', '.') }} <span class="text-sm font-bold text-gray-400">Kg/Ltr</span></p>
+                    <p class="text-3xl font-black text-gray-800 mt-2">{{ number_format($volumeHariIni, 2, ',', '.') }} <span class="text-sm font-bold text-gray-400">kg</span></p>
                 </div>
                 <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 relative overflow-hidden">
                     <div class="absolute top-0 right-0 w-2 h-full bg-purple-500"></div>

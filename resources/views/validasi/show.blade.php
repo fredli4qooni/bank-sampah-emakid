@@ -50,7 +50,7 @@
                         <thead class="text-xs text-gray-500 uppercase bg-gray-50 border-b border-gray-100">
                             <tr>
                                 <th class="px-5 py-3">Jenis Barang</th>
-                                <th class="px-5 py-3 text-center">Berat (Kg/Ltr)</th>
+                                <th class="px-5 py-3 text-center">Berat (kg)</th>
                                 <th class="px-5 py-3 text-right">Subtotal</th>
                             </tr>
                         </thead>

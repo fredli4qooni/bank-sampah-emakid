@@ -83,7 +83,7 @@
                                     </select>
                                 </div>
                                 <div class="w-full sm:w-1/3">
-                                    <label class="block text-xs font-bold text-gray-600 mb-1">Berat Sebenarnya (Kg/Ltr)</label>
+                                    <label class="block text-xs font-bold text-gray-600 mb-1">Berat Sebenarnya (kg)</label>
                                     <input type="number" step="0.01" min="0.1" :name="`items[${index}][berat]`" x-model="item.berat" class="w-full rounded-lg border-gray-300 text-sm focus:border-blue-500 focus:ring-blue-500 shadow-sm font-bold" required>
                                 </div>
                                 <div class="w-full sm:w-auto pb-1">

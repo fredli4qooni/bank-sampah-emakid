@@ -1,7 +1,7 @@
-<aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'" class="fixed inset-y-0 left-0 z-30 w-64 overflow-y-auto transition duration-300 transform bg-white border-r border-gray-100 shadow-lg lg:translate-x-0 lg:static lg:inset-auto flex flex-col justify-between">
+<aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'" class="fixed inset-y-0 left-0 z-30 w-64 overflow-y-auto transition duration-300 transform bg-white border-r border-gray-200 shadow-lg lg:translate-x-0 lg:static lg:inset-auto flex flex-col justify-between">
 
     <div>
-        <div class="flex items-center justify-center h-20 border-b border-gray-100 bg-white">
+        <div class="flex items-center justify-center h-20 border-b border-gray-200 bg-white">
             <div class="flex items-center gap-2">
                 <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />

@@ -86,7 +86,7 @@
                             </div>
                             <div class="w-full md:w-48 flex flex-col justify-end">
                                 <label class="block text-gray-600 text-xs font-bold mb-1 uppercase tracking-wider">Subtotal</label>
-                                <div class="subtotal-text text-xl font-black text-gray-800 bg-white border border-gray-200 rounded-lg px-3 py-1.5 h-[38px] flex items-center">Rp 0</div>
+                                <div class="subtotal-text text-xl font-black text-gray-800 bg-white border border-gray-200 rounded-lg px-3 py-1.5 h-[38px] flex items-center pointer-events-none select-none">Rp 0</div>
                             </div>
                             <div class="absolute top-2 right-2 md:static md:flex md:flex-col md:justify-end">
                                 <button type="button" class="btn-hapus-item text-red-400 hover:text-red-600 p-2 hidden transition-colors" title="Hapus Baris">

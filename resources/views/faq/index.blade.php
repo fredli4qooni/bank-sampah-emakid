@@ -32,7 +32,7 @@
                             <tr>
                                 <th class="px-6 py-4 font-bold text-center w-16">Urutan</th>
                                 <th class="px-6 py-4 font-bold">Pertanyaan & Jawaban</th>
-                                <th class="px-6 py-4 font-bold">Kategori</th>
+                                <th class="px-6 py-4 font-bold text-center">Kategori</th>
                                 <th class="px-6 py-4 font-bold text-center">Status</th>
                                 <th class="px-6 py-4 font-bold text-center">Aksi</th>
                             </tr>
@@ -45,7 +45,7 @@
                                     <div class="font-bold text-gray-800 mb-1">{{ $f->pertanyaan }}</div>
                                     <div class="text-sm text-gray-500 line-clamp-2">{{ Str::limit($f->jawaban, 100) }}</div>
                                 </td>
-                                <td class="px-6 py-4">
+                                <td class="px-6 py-4 text-center">
                                     @if($f->kategori)
                                         <span class="bg-blue-50 text-blue-700 text-xs px-2.5 py-1 rounded font-medium border border-blue-200">{{ $f->kategori }}</span>
                                     @else

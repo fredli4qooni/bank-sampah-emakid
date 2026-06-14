@@ -40,7 +40,7 @@
                     <input type="date" name="start_date" value="{{ $startDate }}" class="rounded-lg border-gray-300 text-sm focus:ring-green-500 focus:border-green-500">
                     <span class="text-gray-500 font-medium">s/d</span>
                     <input type="date" name="end_date" value="{{ $endDate }}" class="rounded-lg border-gray-300 text-sm focus:ring-green-500 focus:border-green-500">
-                    <button type="submit" class="bg-gray-800 hover:bg-gray-900 text-white font-bold py-2 px-4 rounded-lg shadow-sm text-sm">Terapkan</button>
+                    <button type="submit" class="bg-gray-800 hover:bg-gray-900 text-white font-bold py-2.5 px-5 rounded-lg shadow-sm text-sm">Terapkan</button>
                 </form>
             </div>
 
@@ -104,11 +104,14 @@
                                     <form action="{{ route('validasi.process', $trx->id_transaksi) }}" method="POST" class="flex flex-col gap-1">
                                         @csrf
                                         <input type="hidden" name="total_berat_lapangan" value="{{ $trx->detail->sum('berat') }}">
-                                        <div class="flex gap-1">
-                                            <input type="number" name="total_berat_gudang" step="0.01" min="0" placeholder="Berat Gudang (kg)" x-model="bGudang" class="text-xs border-gray-300 focus:border-green-500 focus:ring focus:ring-green-200 rounded shadow-sm px-2 py-1.5 w-full font-bold text-blue-800" required>
-                                            <button type="submit" x-show="bGudang === '' || Math.abs(bLap - parseFloat(bGudang || 0)) <= 10" class="text-[11px] bg-green-600 hover:bg-green-700 text-white font-bold px-2 rounded shadow-sm shrink-0 transition-colors" title="Validasi">
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
-                                            </button>
+                                        <div class="flex flex-col gap-1">
+                                            <div class="flex gap-1">
+                                                <input type="number" name="total_berat_gudang" step="0.01" min="0" placeholder="Berat Gudang (kg)" x-model="bGudang" class="text-xs border-gray-300 focus:border-green-500 focus:ring focus:ring-green-200 rounded shadow-sm px-2 py-1.5 w-full font-bold text-blue-800" required>
+                                                <button type="submit" x-show="bGudang === '' || Math.abs(bLap - parseFloat(bGudang || 0)) <= 10" class="text-[11px] bg-green-600 hover:bg-green-700 text-white font-bold px-2 rounded shadow-sm shrink-0 transition-colors" title="Validasi">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                                                </button>
+                                            </div>
+                                            <input type="text" name="keterangan" placeholder="Keterangan opsional" x-show="bGudang !== '' && Math.abs(bLap - parseFloat(bGudang || 0)) > 0" x-cloak class="text-[10px] border-gray-300 focus:border-green-500 focus:ring focus:ring-green-200 rounded shadow-sm px-2 py-1 w-full text-gray-700">
                                         </div>
                                         <div x-show="bGudang !== ''" class="text-[9px] leading-tight text-center font-bold" x-cloak>
                                             <span x-show="Math.abs(bLap - parseFloat(bGudang || 0)) <= 0.1" class="text-green-600">OK</span>
@@ -237,6 +240,8 @@
                                         <input type="hidden" name="total_berat_lapangan" value="{{ $row['total_berat_pending'] }}">
                                         
                                         <input type="number" name="berat_gudang" step="0.01" min="0" placeholder="Berat Gudang (kg)" x-model="beratGudang" title="Timbangan Gudang u/ {{ number_format($row['total_berat_pending'], 2) }}kg Lapangan" class="text-xs border-gray-300 focus:border-green-500 focus:ring focus:ring-green-200 rounded shadow-sm px-2 py-1.5 w-full text-center font-bold text-blue-800" required>
+                                        
+                                        <input type="text" name="keterangan" placeholder="Keterangan opsional" x-show="beratGudang !== '' && Math.abs(beratLapangan - parseFloat(beratGudang || 0)) > 0" x-cloak class="text-[10px] border-gray-300 focus:border-green-500 focus:ring focus:ring-green-200 rounded shadow-sm px-2 py-1 w-full text-center text-gray-700">
                                         
                                         <div x-show="beratGudang !== ''" class="text-[10px] leading-tight text-center font-bold mb-1" x-cloak>
                                             <span x-show="Math.abs(beratLapangan - parseFloat(beratGudang || 0)) <= 0.1" class="text-green-600">Sesuai! (OK)</span>

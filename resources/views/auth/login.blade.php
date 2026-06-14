@@ -29,11 +29,6 @@
                 <span class="ms-2 text-sm text-gray-600 font-medium">Ingat Saya</span>
             </label>
 
-            @if (Route::has('password.request'))
-                <a class="text-sm font-bold text-green-600 hover:text-green-800 transition-colors" href="{{ route('password.request') }}">
-                    Lupa password?
-                </a>
-            @endif
         </div>
 
         <div class="mt-8">
@@ -42,11 +37,6 @@
             </button>
         </div>
 
-        <div class="mt-8 text-center border-t border-gray-100 pt-6">
-            <p class="text-sm text-gray-600">
-                Belum memiliki akun? 
-                <a href="{{ route('register') }}" class="font-black text-green-600 hover:text-green-800 hover:underline transition-colors">Daftar disini</a>
-            </p>
-        </div>
+
     </form>
 </x-guest-layout>

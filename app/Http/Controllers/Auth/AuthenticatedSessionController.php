@@ -30,7 +30,7 @@ class AuthenticatedSessionController extends Controller
 
         $url = match ($request->user()->role) {
             'admin' => '/admin/dashboard',
-            'penimbang' => '/penimbang/dashboard',
+            'penimbang' => route('transaksi.create', [], false),
             'pengelola' => '/pengelola/dashboard',
             default => '/dashboard',
         };

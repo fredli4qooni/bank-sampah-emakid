@@ -97,17 +97,18 @@ class ValidasiController extends Controller
         $beratGudang = $request->berat_gudang;
         $selisih = abs($beratLapangan - $beratGudang);
 
+        $keterangan = $request->keterangan ? ' - Ket: ' . $request->keterangan : '';
         $catatan = null;
         $newStatus = 'valid';
         
         if ($selisih > 10) {
-            $catatan = "Selisih berat >10kg (Lap: {$beratLapangan}kg, Gud: {$beratGudang}kg). Perlu di evaluasi pengelola.";
+            $catatan = "Selisih berat >10kg (Lap: {$beratLapangan}kg, Gud: {$beratGudang}kg). Perlu di evaluasi pengelola." . $keterangan;
             $newStatus = 'terkoreksi';
         } elseif ($selisih > 0) {
-            $catatan = "Terkoreksi Wajar: Selisih {$selisih}kg (Lap: {$beratLapangan}kg, Gud: {$beratGudang}kg).";
+            $catatan = "Terkoreksi Wajar: Selisih {$selisih}kg (Lap: {$beratLapangan}kg, Gud: {$beratGudang}kg)." . $keterangan;
             $newStatus = 'terkoreksi';
         } else {
-            $catatan = "Sesuai (Lap: {$beratLapangan}kg, Gud: {$beratGudang}kg).";
+            $catatan = "Sesuai (Lap: {$beratLapangan}kg, Gud: {$beratGudang}kg)." . $keterangan;
             $newStatus = 'valid';
         }
 
@@ -252,12 +253,13 @@ class ValidasiController extends Controller
             return back()->with('error', "Validasi ditolak! Terdapat selisih sangat besar ({$selisih} kg). Silakan klik tombol 'Lanjut ke Koreksi Total' untuk merombak rincian keranjang.");
         }
 
+        $keterangan = $request->keterangan ? ' - Ket: ' . $request->keterangan : '';
         $newStatus = 'valid';
         if ($selisih > 0) {
-            $catatan = "Terkoreksi Wajar. (Lap: {$beratLapangan}kg, Gud: {$beratGudang}kg). Selisih: {$selisih}kg.";
+            $catatan = "Terkoreksi Wajar. (Lap: {$beratLapangan}kg, Gud: {$beratGudang}kg). Selisih: {$selisih}kg." . $keterangan;
             $newStatus = 'terkoreksi';
         } else {
-            $catatan = "Sesuai. (Lap: {$beratLapangan}kg, Gud: {$beratGudang}kg).";
+            $catatan = "Sesuai. (Lap: {$beratLapangan}kg, Gud: {$beratGudang}kg)." . $keterangan;
         }
 
         DB::beginTransaction();
