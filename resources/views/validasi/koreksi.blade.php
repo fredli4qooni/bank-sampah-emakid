@@ -84,7 +84,8 @@
                                 </div>
                                 <div class="w-full sm:w-1/3">
                                     <label class="block text-xs font-bold text-gray-600 mb-1">Berat Sebenarnya (kg)</label>
-                                    <input type="number" step="0.01" min="0.1" :name="`items[${index}][berat]`" x-model="item.berat" class="w-full rounded-lg border-gray-300 text-sm focus:border-blue-500 focus:ring-blue-500 shadow-sm font-bold" required>
+                                    <input type="number" step="0.01" min="0.1" :name="`items[${index}][berat]`" x-model="item.berat" onkeydown="if(event.key === '.') { this.nextElementSibling.classList.remove('hidden'); setTimeout(() => this.nextElementSibling.classList.add('hidden'), 3000); event.preventDefault(); }" class="w-full rounded-lg border-gray-300 text-sm focus:border-blue-500 focus:ring-blue-500 shadow-sm font-bold" required>
+                                    <p class="text-red-500 text-[10px] hidden mt-1 font-bold">Gunakan koma (,) bukan titik</p>
                                 </div>
                                 <div class="w-full sm:w-auto pb-1">
                                     <button type="button" @click="removeItem(index)" class="w-full sm:w-auto bg-red-100 text-red-600 hover:bg-red-200 p-2.5 rounded-lg transition-colors" title="Hapus Baris">

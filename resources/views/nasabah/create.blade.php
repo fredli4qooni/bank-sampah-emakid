@@ -19,7 +19,7 @@
                     
                     <div class="mb-5">
                         <label class="block text-gray-700 text-sm font-bold mb-2">Nama Lengkap <span class="text-red-500">*</span></label>
-                        <input type="text" name="nama" value="{{ old('nama') }}" class="w-full border-gray-300 focus:border-green-500 focus:ring focus:ring-green-200 rounded-lg shadow-sm transition-colors" required>
+                        <input type="text" name="nama" value="{{ old('nama') }}" class="capitalize w-full border-gray-300 focus:border-green-500 focus:ring focus:ring-green-200 rounded-lg shadow-sm transition-colors" required>
                         @error('nama') <p class="text-xs text-red-500 mt-1">{{ $message }}</p> @enderror
                     </div>
 

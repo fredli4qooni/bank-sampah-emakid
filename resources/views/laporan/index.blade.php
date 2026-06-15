@@ -59,6 +59,7 @@
                                 <th class="px-6 py-4 font-bold">Nasabah & Unit</th>
                                 <th class="px-6 py-4 font-bold">Penimbang</th>
                                 <th class="px-6 py-4 font-bold text-center">Status</th>
+                                <th class="px-6 py-4 font-bold">Keterangan Validasi</th>
                                 <th class="px-6 py-4 font-bold text-right">Nilai Transaksi (Rp)</th>
                             </tr>
                         </thead>
@@ -77,21 +78,25 @@
                                     <span class="text-xs px-2.5 py-1 rounded-full font-bold uppercase border {{ $trx->status_validasi == 'valid' ? 'bg-green-100 text-green-800 border-green-200' : 'bg-blue-100 text-blue-800 border-blue-200' }}">
                                         {{ $trx->status_validasi }}
                                     </span>
+                                </td>
+                                <td class="px-6 py-4">
                                     @if($trx->catatan_validasi)
-                                        <div class="mt-2 text-[10px] leading-tight {{ str_contains($trx->catatan_validasi, '>10kg') ? 'text-red-600 font-bold' : 'text-gray-500 italic' }}">
+                                        <div class="text-[11px] leading-tight {{ str_contains($trx->catatan_validasi, '>10kg') ? 'text-red-600 font-bold' : 'text-gray-600 italic' }}">
                                             {{ $trx->catatan_validasi }}
                                         </div>
+                                    @else
+                                        <span class="text-gray-400 text-xs italic">-</span>
                                     @endif
                                 </td>
                                 <td class="px-6 py-4 font-semibold text-gray-900 text-right">Rp {{ number_format($trx->total_nilai, 0, ',', '.') }}</td>
                             </tr>
                             @empty
-                            <tr><td colspan="5" class="text-center py-10 text-gray-400">Tidak ada transaksi pada kriteria filter tersebut.</td></tr>
+                            <tr><td colspan="6" class="text-center py-10 text-gray-400">Tidak ada transaksi pada kriteria filter tersebut.</td></tr>
                             @endforelse
                         </tbody>
                         <tfoot class="bg-gray-50 border-t border-gray-200 font-black text-gray-900 text-base">
                             <tr>
-                                <td colspan="4" class="px-6 py-4 text-right uppercase tracking-wider">Total Keseluruhan:</td>
+                                <td colspan="5" class="px-6 py-4 text-right uppercase tracking-wider">Total Keseluruhan:</td>
                                 <td class="px-6 py-4 text-right text-green-700">Rp {{ number_format($totalSemua, 0, ',', '.') }}</td>
                             </tr>
                         </tfoot>

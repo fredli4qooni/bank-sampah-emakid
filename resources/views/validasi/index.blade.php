@@ -106,8 +106,11 @@
                                         <input type="hidden" name="total_berat_lapangan" value="{{ $trx->detail->sum('berat') }}">
                                         <div class="flex flex-col gap-1">
                                             <div class="flex gap-1">
-                                                <input type="number" name="total_berat_gudang" step="0.01" min="0" placeholder="Berat Gudang (kg)" x-model="bGudang" class="text-xs border-gray-300 focus:border-green-500 focus:ring focus:ring-green-200 rounded shadow-sm px-2 py-1.5 w-full font-bold text-blue-800" required>
-                                                <button type="submit" x-show="bGudang === '' || Math.abs(bLap - parseFloat(bGudang || 0)) <= 10" class="text-[11px] bg-green-600 hover:bg-green-700 text-white font-bold px-2 rounded shadow-sm shrink-0 transition-colors" title="Validasi">
+                                                <div class="w-full">
+                                                    <input type="number" name="total_berat_gudang" step="0.01" min="0" placeholder="Berat Gudang (kg)" x-model="bGudang" onkeydown="if(event.key === '.') { this.nextElementSibling.classList.remove('hidden'); setTimeout(() => this.nextElementSibling.classList.add('hidden'), 3000); event.preventDefault(); }" class="text-xs border-gray-300 focus:border-green-500 focus:ring focus:ring-green-200 rounded shadow-sm px-2 py-1.5 w-full font-bold text-blue-800" required>
+                                                    <p class="text-red-500 text-[9px] hidden mt-0.5 font-bold">Gunakan koma (,)</p>
+                                                </div>
+                                                <button type="submit" x-show="bGudang === '' || Math.abs(bLap - parseFloat(bGudang || 0)) <= 10" class="text-[11px] bg-green-600 hover:bg-green-700 text-white font-bold px-2 rounded shadow-sm shrink-0 h-[30px] transition-colors" title="Validasi">
                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
                                                 </button>
                                             </div>
@@ -239,7 +242,10 @@
                                         <input type="hidden" name="ids" value="{{ $row['id_transaksi_pending'] }}">
                                         <input type="hidden" name="total_berat_lapangan" value="{{ $row['total_berat_pending'] }}">
                                         
-                                        <input type="number" name="berat_gudang" step="0.01" min="0" placeholder="Berat Gudang (kg)" x-model="beratGudang" title="Timbangan Gudang u/ {{ number_format($row['total_berat_pending'], 2) }}kg Lapangan" class="text-xs border-gray-300 focus:border-green-500 focus:ring focus:ring-green-200 rounded shadow-sm px-2 py-1.5 w-full text-center font-bold text-blue-800" required>
+                                        <div>
+                                            <input type="number" name="berat_gudang" step="0.01" min="0" placeholder="Berat Gudang (kg)" x-model="beratGudang" onkeydown="if(event.key === '.') { this.nextElementSibling.classList.remove('hidden'); setTimeout(() => this.nextElementSibling.classList.add('hidden'), 3000); event.preventDefault(); }" title="Timbangan Gudang u/ {{ number_format($row['total_berat_pending'], 2) }}kg Lapangan" class="text-xs border-gray-300 focus:border-green-500 focus:ring focus:ring-green-200 rounded shadow-sm px-2 py-1.5 w-full text-center font-bold text-blue-800" required>
+                                            <p class="text-red-500 text-[10px] hidden mt-1 font-bold text-center">Gunakan koma (,) bukan titik</p>
+                                        </div>
                                         
                                         <input type="text" name="keterangan" placeholder="Keterangan opsional" x-show="beratGudang !== '' && Math.abs(beratLapangan - parseFloat(beratGudang || 0)) > 0" x-cloak class="text-[10px] border-gray-300 focus:border-green-500 focus:ring focus:ring-green-200 rounded shadow-sm px-2 py-1 w-full text-center text-gray-700">
                                         

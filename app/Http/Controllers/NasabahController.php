@@ -40,9 +40,9 @@ class NasabahController extends Controller
 
         Nasabah::create([
             'no_rekening' => $noRekening,
-            'nama' => $request->nama,
+            'nama' => ucwords(strtolower($request->nama)),
             'alamat' => $request->alamat,
-            'kecamatan' => $request->kecamatan,
+            'kecamatan' => ucwords(strtolower($request->kecamatan)),
             'no_hp' => $request->no_hp,
             'saldo' => 0.00,
             'id_unit' => $request->id_unit,
@@ -71,9 +71,9 @@ class NasabahController extends Controller
         ]);
 
         $nasabah->update([
-            'nama' => $request->nama,
+            'nama' => ucwords(strtolower($request->nama)),
             'alamat' => $request->alamat,
-            'kecamatan' => $request->kecamatan,
+            'kecamatan' => ucwords(strtolower($request->kecamatan)),
             'no_hp' => $request->no_hp,
             'id_unit' => $request->id_unit,
         ]);

@@ -82,7 +82,8 @@
                             </div>
                             <div class="w-full md:w-32">
                                 <label class="block text-gray-600 text-xs font-bold mb-1 uppercase tracking-wider">Berat (kg)</label>
-                                <input type="number" name="berat[]" step="0.01" min="0.01" class="berat-input w-full border-gray-300 focus:border-green-500 focus:ring focus:ring-green-200 rounded-lg shadow-sm text-sm" placeholder="0.00" required>
+                                <input type="number" name="berat[]" step="0.01" min="0.01" onkeydown="if(event.key === '.') { this.nextElementSibling.classList.remove('hidden'); setTimeout(() => this.nextElementSibling.classList.add('hidden'), 3000); event.preventDefault(); }" class="berat-input w-full border-gray-300 focus:border-green-500 focus:ring focus:ring-green-200 rounded-lg shadow-sm text-sm" placeholder="0.00" required>
+                                <p class="text-red-500 text-[10px] hidden mt-1 font-bold">Gunakan koma (,) bukan titik</p>
                             </div>
                             <div class="w-full md:w-48 flex flex-col justify-end">
                                 <label class="block text-gray-600 text-xs font-bold mb-1 uppercase tracking-wider">Subtotal</label>

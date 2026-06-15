@@ -107,11 +107,12 @@
         <thead>
             <tr>
                 <th width="5%" class="text-center">No</th>
-                <th width="15%">Waktu Transaksi</th>
-                <th width="25%">Nama Nasabah & Rekening</th>
-                <th width="20%">Unit / Kelompok</th>
-                <th width="15%">Petugas</th>
-                <th width="10%" class="text-center">Status</th>
+                <th width="12%">Waktu Transaksi</th>
+                <th width="22%">Nama Nasabah & Rekening</th>
+                <th width="18%">Unit / Kelompok</th>
+                <th width="12%">Petugas</th>
+                <th width="8%" class="text-center">Status</th>
+                <th width="13%">Keterangan</th>
                 <th width="10%" class="text-right">Nilai (Rp)</th>
             </tr>
         </thead>
@@ -133,23 +134,26 @@
                 <td>{{ $trx->penimbang->name }}</td>
                 <td class="text-center">
                     <strong>{{ strtoupper($trx->status_validasi) }}</strong>
+                </td>
+                <td>
                     @if($trx->catatan_validasi)
-                    <br>
                     <span class="{{ str_contains($trx->catatan_validasi, '>10kg') ? 'catatan-merah' : 'catatan-abu' }}">
                         {{ $trx->catatan_validasi }}
                     </span>
+                    @else
+                    -
                     @endif
                 </td>
                 <td class="text-right">{{ number_format($trx->total_nilai, 0, ',', '.') }}</td>
             </tr>
             @empty
             <tr>
-                <td colspan="7" class="text-center">Tidak ada data transaksi pada kriteria ini.</td>
+                <td colspan="8" class="text-center">Tidak ada data transaksi pada kriteria ini.</td>
             </tr>
             @endforelse
 
             <tr class="total-row">
-                <td colspan="6" class="text-right">TOTAL NILAI KESELURUHAN:</td>
+                <td colspan="7" class="text-right">TOTAL NILAI KESELURUHAN:</td>
                 <td class="text-right total-amount">{{ number_format($grandTotal, 0, ',', '.') }}</td>
             </tr>
         </tbody>
