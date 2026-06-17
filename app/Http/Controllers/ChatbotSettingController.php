@@ -24,6 +24,24 @@ class ChatbotSettingController extends Controller
         return view('chatbot.setting', compact('setting', 'rules'));
     }
 
+    public function update(Request $request)
+    {
+        $request->validate([
+            'welcome_message' => 'required|string',
+        ]);
+
+        $setting = ChatbotSetting::first();
+        
+        if ($setting) {
+            $setting->update([
+                'is_active' => $request->has('is_active'), 
+                'welcome_message' => $request->welcome_message,
+            ]);
+        }
+
+        return back()->with('success', 'Pengaturan Umum berhasil diperbarui!');
+    }
+
     public function storeRule(Request $request)
     {
         $request->validate([

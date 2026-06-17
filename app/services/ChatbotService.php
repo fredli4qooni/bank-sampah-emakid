@@ -6,6 +6,7 @@ use App\Models\Nasabah;
 use App\Models\Transaksi;
 use App\Models\DetailTransaksi;
 use App\Models\JenisSampah;
+use App\Models\ChatbotRule;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -14,6 +15,38 @@ class ChatbotService
     public function processMessage(string $message)
     {
         $input = strtolower(trim($message));
+        
+        $customRules = ChatbotRule::where('jenis_aksi', 'teks')->get();
+        
+        foreach ($customRules as $custom) {
+            $keywords = array_map('trim', explode(',', strtolower($custom->keywords)));
+            
+            foreach ($keywords as $keyword) {
+                if (empty($keyword)) continue;
+
+                if (str_contains($keyword, '&')) {
+                    $words = array_map('trim', explode('&', $keyword));
+                    $allMatch = true;
+                    
+                    foreach ($words as $word) {
+                        if (!str_contains($input, $word)) {
+                            $allMatch = false;
+                            break;
+                        }
+                    }
+                    
+                    if ($allMatch) {
+                        return $custom->balasan_teks;
+                    }
+                } 
+                else {
+                    if (str_contains($input, $keyword)) {
+                        return $custom->balasan_teks;
+                    }
+                }
+            }
+        }
+
         $rules = config('chatbot_rules.intents');
 
         foreach ($rules as $intentId => $rule) {

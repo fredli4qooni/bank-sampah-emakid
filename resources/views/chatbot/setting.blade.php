@@ -154,7 +154,7 @@
                                     <label class="block text-sm font-bold text-gray-700 mb-1">Balasan Bot (Teks Jawaban)</label>
                                     <textarea name="balasan_teks" rows="4" class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500 shadow-sm text-sm" required></textarea>
                                 </div>
-                                <input type="hidden" name="tipe_aturan" value="teks">
+                                <input type="hidden" name="jenis_aksi" value="teks">
                             </div>
                         </div>
                         <div class="bg-gray-50 px-6 py-4 border-t border-gray-100 flex justify-end gap-3">
