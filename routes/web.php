@@ -47,6 +47,9 @@ Route::middleware(['auth', 'role:admin,penimbang'])->group(function () {
     Route::get('/transaksi/input', [TransaksiController::class, 'create'])->name('transaksi.create');
     Route::post('/transaksi/input', [TransaksiController::class, 'store'])->name('transaksi.store');
     Route::get('/transaksi/{id}/cetak', [TransaksiController::class, 'cetakStruk'])->name('transaksi.cetak');
+    Route::get('/transaksi/{id}/edit', [TransaksiController::class, 'edit'])->name('transaksi.edit');
+    Route::put('/transaksi/{id}', [TransaksiController::class, 'update'])->name('transaksi.update');
+    Route::delete('/transaksi/{id}', [TransaksiController::class, 'destroy'])->name('transaksi.destroy');
 });
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
@@ -62,6 +65,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/validasi/{id}', [ValidasiController::class, 'show'])->name('validasi.show');
     Route::get('/validasi/{id}/koreksi', [\App\Http\Controllers\ValidasiController::class, 'koreksi'])->name('validasi.koreksi');
     Route::put('/validasi/{id}/koreksi', [\App\Http\Controllers\ValidasiController::class, 'updateKoreksi'])->name('validasi.update_koreksi');
+    Route::delete('/validasi/{id}', [\App\Http\Controllers\ValidasiController::class, 'destroy'])->name('validasi.destroy');
 
     Route::post('/chatbot/query', [ChatbotController::class, 'query'])
         ->middleware('throttle:60,1')
@@ -79,9 +83,6 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/penarikan', [App\Http\Controllers\PenarikanController::class, 'index'])->name('penarikan.index');
     Route::get('/penarikan/create', [App\Http\Controllers\PenarikanController::class, 'create'])->name('penarikan.create');
     Route::post('/penarikan', [App\Http\Controllers\PenarikanController::class, 'store'])->name('penarikan.store');
-
-    Route::get('/transaksi/{id}/edit', [App\Http\Controllers\TransaksiController::class, 'edit'])->name('transaksi.edit');
-    Route::put('/transaksi/{id}', [App\Http\Controllers\TransaksiController::class, 'update'])->name('transaksi.update');
 
     Route::resource('faq', FaqController::class);
     Route::resource('users', UserController::class);

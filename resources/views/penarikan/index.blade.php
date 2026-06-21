@@ -42,7 +42,12 @@
                             <tr class="hover:bg-gray-50 transition-colors">
                                 <td class="px-6 py-4 font-medium">{{ $p->created_at->format('d/m/Y H:i') }}</td>
                                 <td class="px-6 py-4 font-bold text-gray-800">{{ $p->nasabah->nama }} <br><span class="text-xs text-gray-400 font-normal">{{ $p->nasabah->no_rekening }}</span></td>
-                                <td class="px-6 py-4 font-black text-red-600 text-right">- {{ number_format($p->nominal, 0, ',', '.') }}</td>
+                                <td class="px-6 py-4 font-black text-red-600 text-right">
+                                    - {{ number_format($p->nominal, 0, ',', '.') }}
+                                    @if($p->biaya_admin > 0)
+                                        <div class="text-[10px] text-gray-500 font-normal mt-1 leading-tight">Biaya Admin:<br>Rp {{ number_format($p->biaya_admin, 0, ',', '.') }}</div>
+                                    @endif
+                                </td>
                                 <td class="px-6 py-4 text-center">
                                     <span class="bg-gray-100 text-gray-800 text-xs px-2.5 py-1 rounded-full font-bold border border-gray-200">{{ $p->metode }}</span>
                                 </td>

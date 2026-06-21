@@ -107,13 +107,13 @@
         <thead>
             <tr>
                 <th width="5%" class="text-center">No</th>
-                <th width="12%">Waktu Transaksi</th>
+                <th width="12%">Waktu & TRX</th>
                 <th width="22%">Nama Nasabah & Rekening</th>
                 <th width="18%">Unit / Kelompok</th>
                 <th width="12%">Petugas</th>
                 <th width="8%" class="text-center">Status</th>
                 <th width="13%">Keterangan</th>
-                <th width="10%" class="text-right">Nilai (Rp)</th>
+                <th width="10%" class="text-right">Nilai Nominal</th>
             </tr>
         </thead>
         <tbody>
@@ -125,7 +125,10 @@
             @php $grandTotal += $trx->total_nilai; @endphp
             <tr>
                 <td class="text-center">{{ $no++ }}</td>
-                <td>{{ $trx->created_at->format('d/m/Y H:i') }}</td>
+                <td>
+                    {{ $trx->created_at->format('d/m/Y H:i') }}<br>
+                    <span class="catatan-abu">#{{ $trx->id_transaksi }}</span>
+                </td>
                 <td>
                     <strong>{{ $trx->nasabah->nama }}</strong><br>
                     <span class="badge">{{ $trx->nasabah->no_rekening }}</span>
@@ -144,7 +147,10 @@
                     -
                     @endif
                 </td>
-                <td class="text-right">{{ number_format($trx->total_nilai, 0, ',', '.') }}</td>
+                <td class="text-right">
+                    Rp {{ number_format($trx->total_nilai, 0, ',', '.') }}<br>
+                    <span class="catatan-abu">Berat: {{ $trx->detail->sum('berat') }} kg</span>
+                </td>
             </tr>
             @empty
             <tr>

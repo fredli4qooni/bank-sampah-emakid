@@ -18,7 +18,7 @@
                     </div>
                     <div>
                         <p class="font-bold text-yellow-800">Tindakan Diperlukan</p>
-                        <p class="text-sm text-yellow-700">Terdapat <b>{{ $pendingValidasi }}</b> transaksi menunggu validasi Anda.</p>
+                        <p class="text-sm text-yellow-700">Terdapat setoran dari <b>{{ $pendingValidasi }} kelompok penimbang</b> menunggu validasi Anda.</p>
                     </div>
                 </div>
                 <a href="{{ route('validasi.index') }}" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-lg text-sm transition-colors shadow-sm">
@@ -52,11 +52,19 @@
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
                 <div class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                    <h3 class="text-gray-800 font-bold mb-4 flex items-center gap-2">
-                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
-                        </svg>
-                        Tren Transaksi (7 Hari Terakhir)
+                    <h3 class="text-gray-800 font-bold mb-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                        <div class="flex items-center gap-2">
+                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+                            </svg>
+                            Tren Transaksi
+                        </div>
+                        <form method="GET" action="{{ route('admin.dashboard') }}" class="flex items-center gap-2 text-sm w-full sm:w-auto">
+                            <input type="date" name="start_date" value="{{ $startDate }}" class="rounded-lg border-gray-300 text-xs py-1.5 focus:ring-green-500 focus:border-green-500">
+                            <span class="text-gray-500 font-medium">s/d</span>
+                            <input type="date" name="end_date" value="{{ $endDate }}" class="rounded-lg border-gray-300 text-xs py-1.5 focus:ring-green-500 focus:border-green-500">
+                            <button type="submit" class="bg-gray-800 hover:bg-gray-900 text-white px-4 py-1.5 rounded-lg text-xs font-bold transition-colors shadow-sm">Filter</button>
+                        </form>
                     </h3>
                     <div class="relative h-72">
                         <canvas id="lineChart"></canvas>

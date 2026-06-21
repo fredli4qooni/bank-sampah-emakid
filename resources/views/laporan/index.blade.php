@@ -55,12 +55,12 @@
                     <table class="w-full text-sm text-left text-gray-600">
                         <thead class="text-xs text-green-800 uppercase bg-green-50 border-b border-gray-200">
                             <tr>
-                                <th class="px-6 py-4 font-bold">Waktu</th>
+                                <th class="px-6 py-4 font-bold">Waktu & TRX</th>
                                 <th class="px-6 py-4 font-bold">Nasabah & Unit</th>
                                 <th class="px-6 py-4 font-bold">Penimbang</th>
                                 <th class="px-6 py-4 font-bold text-center">Status</th>
                                 <th class="px-6 py-4 font-bold">Keterangan Validasi</th>
-                                <th class="px-6 py-4 font-bold text-right">Nilai Transaksi (Rp)</th>
+                                <th class="px-6 py-4 font-bold text-right">Nilai Nominal</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-100">
@@ -68,7 +68,10 @@
                             @forelse($transaksi as $trx)
                             @php $totalSemua += $trx->total_nilai; @endphp
                             <tr class="hover:bg-gray-50 transition-colors">
-                                <td class="px-6 py-4 whitespace-nowrap">{{ $trx->created_at->format('d/m/Y H:i') }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    {{ $trx->created_at->format('d/m/Y H:i') }}<br>
+                                    <span class="text-xs text-gray-400 font-mono">#{{ $trx->id_transaksi }}</span>
+                                </td>
                                 <td class="px-6 py-4">
                                     <div class="font-bold text-gray-800">{{ $trx->nasabah->nama }}</div>
                                     <div class="text-xs text-gray-500 mt-0.5">{{ $trx->nasabah->unit->nama_unit ?? '-' }}</div>
@@ -88,7 +91,10 @@
                                         <span class="text-gray-400 text-xs italic">-</span>
                                     @endif
                                 </td>
-                                <td class="px-6 py-4 font-semibold text-gray-900 text-right">Rp {{ number_format($trx->total_nilai, 0, ',', '.') }}</td>
+                                <td class="px-6 py-4 font-semibold text-gray-900 text-right">
+                                    Rp {{ number_format($trx->total_nilai, 0, ',', '.') }}<br>
+                                    <span class="text-xs text-gray-400 font-normal">Berat: {{ $trx->detail->sum('berat') }} kg</span>
+                                </td>
                             </tr>
                             @empty
                             <tr><td colspan="6" class="text-center py-10 text-gray-400">Tidak ada transaksi pada kriteria filter tersebut.</td></tr>

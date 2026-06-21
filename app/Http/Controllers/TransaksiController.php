@@ -15,7 +15,7 @@ class TransaksiController extends Controller
 {
     public function index()
     {
-        $transaksi = Transaksi::with(['nasabah'])
+        $transaksi = Transaksi::with(['nasabah', 'detail.jenisSampah'])
             ->where('id_user', Auth::id())
             ->orderBy('created_at', 'desc')
             ->get();
@@ -25,7 +25,7 @@ class TransaksiController extends Controller
 
     public function create()
     {
-        $nasabah = Nasabah::orderBy('nama', 'asc')->get();
+        $nasabah = Nasabah::with('unit')->orderBy('nama', 'asc')->get();
         
         $jenisSampah = JenisSampah::where('status_aktif', true)->orderBy('nama_sampah', 'asc')->get();
 
@@ -161,5 +161,26 @@ class TransaksiController extends Controller
                   ->setPaper($customPaper);
 
         return $pdf->stream('Struk_Setoran_' . $transaksi->id_transaksi . '.pdf');
+    }
+
+    public function destroy(int $id_transaksi)
+    {
+        $transaksi = Transaksi::findOrFail($id_transaksi);
+        
+        if ($transaksi->status_validasi !== 'pending') {
+            return back()->with('error', 'Hanya transaksi berstatus pending yang dapat dihapus.');
+        }
+
+        DB::beginTransaction();
+        try {
+            \App\Models\DetailTransaksi::where('id_transaksi', $id_transaksi)->delete();
+            $transaksi->delete();
+            
+            DB::commit();
+            return back()->with('success', 'Transaksi berhasil dihapus.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Terjadi kesalahan sistem: ' . $e->getMessage());
+        }
     }
 }

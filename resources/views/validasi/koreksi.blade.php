@@ -106,8 +106,8 @@
                     </button>
 
                     <div class="mb-8">
-                        <label class="block text-sm font-bold text-gray-700 mb-2">Alasan Koreksi (Wajib untuk Audit Log) <span class="text-red-500">*</span></label>
-                        <textarea name="catatan_koreksi" rows="3" class="w-full border-gray-300 focus:border-blue-500 focus:ring-blue-200 rounded-lg shadow-sm text-sm" placeholder="Contoh: Petugas salah memilih jenis sampah, seharusnya Botol Kaca bukan Plastik..." required></textarea>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">Alasan Koreksi <span class="text-gray-400 font-normal">(Opsional)</span></label>
+                        <textarea name="catatan_koreksi" rows="3" class="w-full border-gray-300 focus:border-blue-500 focus:ring-blue-200 rounded-lg shadow-sm text-sm" placeholder="Contoh: Petugas salah memilih jenis sampah, seharusnya Botol Kaca bukan Plastik..."></textarea>
                     </div>
 
                     <div class="flex justify-end items-center bg-gray-50 p-4 rounded-xl border border-gray-200 gap-3">

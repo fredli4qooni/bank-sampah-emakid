@@ -16,6 +16,7 @@ class PenarikanSaldo extends Model
         'id_nasabah',
         'id_admin',
         'nominal',
+        'biaya_admin',
         'metode',
         'keterangan',
         'nomor_token',

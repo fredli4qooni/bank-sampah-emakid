@@ -21,7 +21,7 @@ class PenarikanController extends Controller
 
     public function create()
     {
-        $nasabah = Nasabah::where('saldo', '>', 0)->orderBy('nama', 'asc')->get();
+        $nasabah = Nasabah::with('unit')->where('saldo', '>', 0)->orderBy('nama', 'asc')->get();
         return view('penarikan.create', compact('nasabah'));
     }
 
@@ -30,10 +30,11 @@ class PenarikanController extends Controller
         $request->validate([
             'id_nasabah' => 'required|exists:nasabah,id_nasabah',
             'nominal' => 'required|numeric|min:100',
+            'biaya_admin' => 'nullable|numeric|min:0',
             'metode' => 'required|in:Tunai,Transfer Bank,E-Wallet (Dana/OVO/GoPay),Token Listrik,Lainnya',
             'keterangan' => 'nullable|string|max:255',
             'nomor_token' => 'nullable|string|max:50|required_if:metode,Token Listrik',
-            'bukti_transfer' => 'nullable|image|max:2048|required_if:metode,Transfer Bank|required_if:metode,E-Wallet (Dana/OVO/GoPay)',
+            'bukti_transfer' => 'nullable|image|max:2048',
         ]);
 
         $nasabah = Nasabah::findOrFail($request->id_nasabah);
@@ -53,6 +54,7 @@ class PenarikanController extends Controller
                 'id_nasabah' => $nasabah->id_nasabah,
                 'id_admin' => Auth::id(),
                 'nominal' => $request->nominal,
+                'biaya_admin' => $request->biaya_admin ?? 0,
                 'metode' => $request->metode,
                 'keterangan' => $request->keterangan,
                 'nomor_token' => $request->nomor_token,

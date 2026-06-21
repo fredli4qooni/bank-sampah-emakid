@@ -22,8 +22,8 @@
                     </svg>
                 </div>
                 <div>
-                    <h3 class="text-blue-800 font-bold text-lg">Mode Koreksi Admin</h3>
-                    <p class="text-blue-600 text-sm mt-1">Ubah berat atau harga satuan jika terdapat kesalahan input dari Penimbang. Perubahan ini akan langsung mempengaruhi total estimasi nilai transaksi sebelum proses validasi gudang dilakukan.</p>
+                    <h3 class="text-blue-800 font-bold text-lg">Mode Koreksi Transaksi</h3>
+                    <p class="text-blue-600 text-sm mt-1">Ubah berat atau harga satuan jika terdapat kesalahan input. Perubahan ini akan langsung mempengaruhi total estimasi nilai transaksi sebelum divalidasi.</p>
                 </div>
             </div>
 

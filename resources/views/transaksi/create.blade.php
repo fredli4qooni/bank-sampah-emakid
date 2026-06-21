@@ -62,7 +62,7 @@
                         <select id="select-nasabah" name="id_nasabah" class="w-full border-gray-300 focus:border-green-500 focus:ring focus:ring-green-200 rounded-lg shadow-sm" required>
                             <option value="" disabled selected>-- Ketik / Pilih Nama Nasabah --</option>
                             @foreach($nasabah as $n)
-                                <option value="{{ $n->id_nasabah }}">{{ $n->nama }} ({{ $n->no_rekening }})</option>
+                                <option value="{{ $n->id_nasabah }}">{{ $n->nama }} ({{ $n->unit->nama_unit ?? 'Tanpa Unit' }})</option>
                             @endforeach
                         </select>
                     </div>
@@ -121,8 +121,19 @@
     </div>
 
     <x-slot name="scripts">
+        <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.css" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
+        
         <script>
             document.addEventListener('DOMContentLoaded', function() {
+                let nasabahSelect = new TomSelect("#select-nasabah", {
+                    create: false,
+                    sortField: {
+                        field: "text",
+                        direction: "asc"
+                    }
+                });
+
                 const container = document.getElementById('item-container');
                 const btnTambah = document.getElementById('btn-tambah-item');
                 const totalText = document.getElementById('total-text');
@@ -206,7 +217,11 @@
                     setTimeout(() => panel.remove(), 300);
                 }
 
-                document.getElementById('select-nasabah').selectedIndex = 0;
+                if(document.getElementById('select-nasabah').tomselect) {
+                    document.getElementById('select-nasabah').tomselect.clear();
+                } else {
+                    document.getElementById('select-nasabah').selectedIndex = 0;
+                }
 
                 const container = document.getElementById('item-container');
                 const rows = container.querySelectorAll('.item-row');

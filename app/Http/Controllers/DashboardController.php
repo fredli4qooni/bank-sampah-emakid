@@ -11,7 +11,7 @@ use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
-    private function getDashboardData()
+    private function getDashboardData(Request $request)
     {
         $hariIni = Carbon::today();
 
@@ -27,11 +27,18 @@ class DashboardController extends Controller
             ->take(10)
             ->get();
 
-        $data['pendingValidasi'] = Transaksi::where('status_validasi', 'pending')->count();
+        $data['pendingValidasi'] = Transaksi::where('status_validasi', 'pending')
+            ->distinct('id_user')
+            ->count('id_user');
 
-        $tujuhHariLalu = Carbon::today()->subDays(6);
-        $dataTransaksi7Hari = Transaksi::selectRaw('DATE(created_at) as date, COUNT(*) as total_count, SUM(total_nilai) as total_value')
-            ->whereBetween('created_at', [$tujuhHariLalu, Carbon::today()->endOfDay()])
+        $startDate = $request->query('start_date', Carbon::today()->subDays(6)->format('Y-m-d'));
+        $endDate = $request->query('end_date', Carbon::today()->format('Y-m-d'));
+
+        $startDateObj = Carbon::parse($startDate);
+        $endDateObj = Carbon::parse($endDate);
+
+        $dataTransaksiPeriode = Transaksi::selectRaw('DATE(created_at) as date, COUNT(*) as total_count, SUM(total_nilai) as total_value')
+            ->whereBetween('created_at', [$startDateObj->startOfDay(), $endDateObj->endOfDay()])
             ->groupBy('date')
             ->orderBy('date', 'asc')
             ->get();
@@ -40,14 +47,17 @@ class DashboardController extends Controller
         $data['dataCount'] = [];
         $data['dataValue'] = [];
 
-        for ($i = 0; $i < 7; $i++) {
-            $date = Carbon::today()->subDays(6 - $i)->format('Y-m-d');
-            $data['labelHari'][] = Carbon::parse($date)->format('d M');
+        for ($date = clone $startDateObj; $date->lte($endDateObj); $date->addDay()) {
+            $dateString = $date->format('Y-m-d');
+            $data['labelHari'][] = $date->format('d M');
 
-            $record = $dataTransaksi7Hari->firstWhere('date', $date);
+            $record = $dataTransaksiPeriode->firstWhere('date', $dateString);
             $data['dataCount'][] = $record ? $record->total_count : 0;
             $data['dataValue'][] = $record ? $record->total_value : 0;
         }
+
+        $data['startDate'] = $startDate;
+        $data['endDate'] = $endDate;
 
         $komposisiSampah = DetailTransaksi::with('jenisSampah')
             ->whereHas('transaksi', function ($q) use ($hariIni) {
@@ -68,15 +78,15 @@ class DashboardController extends Controller
         return $data;
     }
 
-    public function admin()
+    public function admin(Request $request)
     {
-        $data = $this->getDashboardData();
+        $data = $this->getDashboardData($request);
         return view('dashboard.admin', $data);
     }
 
-    public function pengelola()
+    public function pengelola(Request $request)
     {
-        $data = $this->getDashboardData();
+        $data = $this->getDashboardData($request);
         return view('dashboard.pengelola', $data);
     }
 

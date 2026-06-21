@@ -29,11 +29,8 @@ class ValidasiController extends Controller
             'total_nilai' => $semuaTransaksi->sum('total_nilai'),
         ];
 
-        // Tab 1: Flat list Pending
-        $pendingTransactions = $semuaTransaksi->where('status_validasi', 'pending')->values();
-
-        // Tab 2: Flat list Selesai
-        $completedTransactions = $semuaTransaksi->whereIn('status_validasi', ['valid', 'terkoreksi'])->values();
+        // Menu Riwayat (Semua Transaksi)
+        $riwayatTransactions = $semuaTransaksi;
 
         // Tab 3: Group by Penimbang untuk Mode Bulk
         $tabPenimbang = $semuaTransaksi->groupBy(function ($item) {
@@ -47,7 +44,7 @@ class ValidasiController extends Controller
             ]);
         });
 
-        return view('validasi.index', compact('pendingTransactions', 'completedTransactions', 'tabPenimbang', 'summary', 'startDate', 'endDate'));
+        return view('validasi.index', compact('riwayatTransactions', 'tabPenimbang', 'summary', 'startDate', 'endDate'));
     }
 
     private function formatGrupData(\Illuminate\Support\Collection $group, array $extraData = [])
@@ -148,7 +145,7 @@ class ValidasiController extends Controller
             'items' => 'required|array|min:1',
             'items.*.id_jenis' => 'required|exists:jenis_sampah,id_jenis',
             'items.*.berat' => 'required|numeric|min:0.1',
-            'catatan_koreksi' => 'required|string'
+            'catatan_koreksi' => 'nullable|string'
         ]);
 
         DB::beginTransaction();
@@ -197,7 +194,8 @@ class ValidasiController extends Controller
             }
 
             $newStatus = $isChanged ? 'terkoreksi' : 'valid';
-            $catatanAdmin = $isChanged ? 'Koreksi Admin: ' . $request->catatan_koreksi : 'Divalidasi tanpa perubahan data. Catatan: ' . $request->catatan_koreksi;
+            $catatanSuffix = $request->catatan_koreksi ? ' - ' . $request->catatan_koreksi : '';
+            $catatanAdmin = $isChanged ? 'Koreksi Admin' . $catatanSuffix : 'Divalidasi tanpa perubahan data' . $catatanSuffix;
 
             $transaksi->update([
                 'total_nilai' => $totalNilaiBaru,
@@ -277,6 +275,32 @@ class ValidasiController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Gagal memproses validasi: ' . $e->getMessage());
+        }
+    }
+
+    public function destroy(int $id_transaksi)
+    {
+        if (Auth::user()->role !== 'admin') {
+            return back()->with('error', 'Hanya admin yang dapat menghapus transaksi.');
+        }
+
+        DB::beginTransaction();
+        try {
+            $transaksi = Transaksi::with(['nasabah', 'detail'])->findOrFail($id_transaksi);
+
+            if (in_array($transaksi->status_validasi, ['valid', 'terkoreksi'])) {
+                $transaksi->nasabah->decrement('saldo', $transaksi->total_nilai);
+            }
+
+            $transaksi->detail()->delete();
+            LogKoreksi::where('id_transaksi', $id_transaksi)->delete();
+            $transaksi->delete();
+
+            DB::commit();
+            return back()->with('success', 'Transaksi berhasil dihapus dan saldo nasabah telah ditarik kembali.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Gagal menghapus transaksi: ' . $e->getMessage());
         }
     }
 }

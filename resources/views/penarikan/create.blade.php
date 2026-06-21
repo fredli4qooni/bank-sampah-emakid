@@ -25,11 +25,11 @@
                     
                     <div class="mb-5">
                         <label class="block text-gray-700 text-sm font-bold mb-2">Pilih Nasabah <span class="text-red-500">*</span></label>
-                        <select name="id_nasabah" x-model="selectedNasabah" @change="updateSaldo()" class="w-full border-gray-300 focus:border-green-500 focus:ring focus:ring-green-200 rounded-lg shadow-sm transition-colors" required>
-                            <option value="">-- Cari Nama Nasabah --</option>
+                        <select id="select-nasabah" name="id_nasabah" x-model="selectedNasabah" @change="updateSaldo()" class="w-full border-gray-300 focus:border-green-500 focus:ring focus:ring-green-200 rounded-lg shadow-sm transition-colors" required>
+                            <option value="">-- Cari / Ketik Nama Nasabah --</option>
                             @foreach($nasabah as $n)
                                 <option value="{{ $n->id_nasabah }}" data-saldo="{{ $n->saldo }}">
-                                    {{ $n->no_rekening }} - {{ $n->nama }}
+                                    {{ $n->nama }} ({{ $n->unit->nama_unit ?? 'Tanpa Unit' }})
                                 </option>
                             @endforeach
                         </select>
@@ -39,10 +39,17 @@
                         </div>
                     </div>
 
-                    <div class="mb-5">
-                        <label class="block text-gray-700 text-sm font-bold mb-2">Nominal Penarikan (Rp) <span class="text-red-500">*</span></label>
-                        <input type="number" name="nominal" x-model="nominalInput" value="{{ old('nominal') }}" min="100" class="w-full border-gray-300 focus:border-green-500 focus:ring focus:ring-green-200 rounded-lg shadow-sm transition-colors text-lg font-bold" required>
-                        <p x-show="isNominalExceed" x-cloak class="text-xs text-red-500 mt-1 font-bold">Peringatan: Nominal penarikan melebihi saldo tersedia!</p>
+                    <div class="mb-5 grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-gray-700 text-sm font-bold mb-2">Nominal Penarikan (Rp) <span class="text-red-500">*</span></label>
+                            <input type="number" name="nominal" x-model="nominalInput" value="{{ old('nominal') }}" min="100" class="w-full border-gray-300 focus:border-green-500 focus:ring focus:ring-green-200 rounded-lg shadow-sm transition-colors text-lg font-bold" required>
+                            <p x-show="isNominalExceed" x-cloak class="text-xs text-red-500 mt-1 font-bold">Peringatan: Nominal penarikan melebihi saldo tersedia!</p>
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 text-sm font-bold mb-2">Biaya Admin (Rp)</label>
+                            <input type="number" name="biaya_admin" value="{{ old('biaya_admin', 0) }}" min="0" class="w-full border-gray-300 focus:border-green-500 focus:ring focus:ring-green-200 rounded-lg shadow-sm transition-colors text-lg font-bold">
+                            <p class="text-xs text-gray-500 mt-1">Diisi manual untuk mencatat biaya transfer antar bank. Biaya saat ini ditanggung Bank Sampah Emak.id (tidak memotong saldo nasabah).</p>
+                        </div>
                     </div>
 
                     <div class="mb-5">
@@ -63,9 +70,9 @@
                     </div>
 
                     <div x-show="metodeInput === 'Transfer Bank' || metodeInput === 'E-Wallet (Dana/OVO/GoPay)'" x-cloak class="mb-5 bg-blue-50 p-4 rounded-xl border border-blue-200 animate-fade-in-down">
-                        <label class="block text-blue-800 text-sm font-bold mb-2">Upload Bukti Transfer <span class="text-red-500">*</span></label>
+                        <label class="block text-blue-800 text-sm font-bold mb-2">Upload Bukti Transfer <span class="text-blue-500 text-xs font-normal">(Opsional)</span></label>
                         <input type="file" name="bukti_transfer" accept="image/*" class="w-full border-blue-300 focus:border-blue-500 focus:ring focus:ring-blue-200 rounded-lg shadow-sm bg-white p-2">
-                        <p class="text-xs text-blue-600 mt-1">Wajib mengunggah *screenshot* atau foto bukti transfer ke rekening/ewallet nasabah.</p>
+                        <p class="text-xs text-blue-600 mt-1">Anda dapat mengunggah *screenshot* atau foto bukti transfer ke rekening/ewallet nasabah.</p>
                     </div>
 
                     <div class="mb-8">
@@ -86,7 +93,24 @@
     </div>
 
     <x-slot name="scripts">
+        <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.css" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
+
         <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                new TomSelect("#select-nasabah", {
+                    create: false,
+                    sortField: {
+                        field: "text",
+                        direction: "asc"
+                    },
+                    onChange: function(value) {
+                        const selectElement = document.getElementById('select-nasabah');
+                        selectElement.dispatchEvent(new Event('change', { bubbles: true }));
+                    }
+                });
+            });
+
             document.addEventListener('alpine:init', () => {
                 Alpine.data('penarikanForm', () => ({
                     selectedNasabah: "",
