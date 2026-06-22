@@ -15,10 +15,14 @@ class TransaksiController extends Controller
 {
     public function index()
     {
-        $transaksi = Transaksi::with(['nasabah', 'detail.jenisSampah'])
-            ->where('id_user', Auth::id())
-            ->orderBy('created_at', 'desc')
-            ->get();
+        $query = Transaksi::with(['nasabah', 'detail.jenisSampah']);
+        
+        // Jika penimbang, hanya lihat setoran miliknya. Jika admin, lihat semua.
+        if (Auth::user()->role === 'penimbang') {
+            $query->where('id_user', Auth::id());
+        }
+
+        $transaksi = $query->orderBy('created_at', 'desc')->paginate(10);
 
         return view('transaksi.index', compact('transaksi'));
     }

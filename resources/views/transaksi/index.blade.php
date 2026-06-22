@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-bold text-xl text-green-800 leading-tight">
-            {{ __('Riwayat Setoran Saya') }}
+            {{ Auth::user()->role === 'admin' ? 'Seluruh Riwayat Transaksi' : 'Riwayat Setoran Saya' }}
         </h2>
     </x-slot>
 
@@ -10,7 +10,7 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-xl border border-gray-100 p-6">
                 
                 <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-lg font-bold text-gray-800">Riwayat Transaksi Setoran Sampah</h3>
+                    <h3 class="text-lg font-bold text-gray-800">{{ Auth::user()->role === 'admin' ? 'Data Keseluruhan Setoran Sampah' : 'Riwayat Transaksi Setoran Sampah' }}</h3>
                 </div>
 
                 <div class="overflow-x-auto rounded-lg border border-gray-200">
@@ -76,11 +76,17 @@
                                 </td>
                             </tr>
                             @empty
-                            <tr><td colspan="6" class="text-center py-8 text-gray-400">Belum ada riwayat setoran yang Anda input.</td></tr>
+                            <tr><td colspan="6" class="text-center py-8 text-gray-400">{{ Auth::user()->role === 'admin' ? 'Belum ada riwayat transaksi di sistem.' : 'Belum ada riwayat setoran yang Anda input.' }}</td></tr>
                             @endforelse
                         </tbody>
                     </table>
                 </div>
+
+                @if($transaksi->hasPages())
+                <div class="mt-6">
+                    {{ $transaksi->links() }}
+                </div>
+                @endif
 
             </div>
         </div>
