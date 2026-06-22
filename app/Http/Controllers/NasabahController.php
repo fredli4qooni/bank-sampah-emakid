@@ -69,12 +69,13 @@ class NasabahController extends Controller
 
         $request->validate([
             'nama' => 'required|string|max:100|unique:nasabah,nama',
-            'no_hp' => 'required|string|max:20',
+            'no_hp' => 'required|string|starts_with:62|max:20',
             'alamat' => 'nullable|string',
             'kecamatan' => 'nullable|string|max:50',
             'id_unit' => 'required|exists:units,id_unit',
         ], [
-            'nama.unique' => 'Nama nasabah sudah terdaftar. Silakan gunakan nama lain atau tambahkan nama belakang.'
+            'nama.unique' => 'Nama nasabah sudah terdaftar. Silakan gunakan nama lain atau tambahkan nama belakang.',
+            'no_hp.starts_with' => 'Nomor WhatsApp harus diawali dengan kode negara 62 (contoh: 62812...)'
         ]);
 
         $lastNasabah = Nasabah::orderBy('id_nasabah', 'desc')->first();
@@ -107,12 +108,13 @@ class NasabahController extends Controller
 
         $request->validate([
             'nama' => 'required|string|max:100|unique:nasabah,nama,' . $nasabah->id_nasabah . ',id_nasabah',
-            'no_hp' => 'required|string|max:20',
+            'no_hp' => 'required|string|starts_with:62|max:20',
             'alamat' => 'nullable|string',
             'kecamatan' => 'nullable|string|max:50',
             'id_unit' => 'required|exists:units,id_unit',
         ], [
-            'nama.unique' => 'Nama nasabah sudah terdaftar. Silakan gunakan nama lain atau tambahkan nama belakang.'
+            'nama.unique' => 'Nama nasabah sudah terdaftar. Silakan gunakan nama lain atau tambahkan nama belakang.',
+            'no_hp.starts_with' => 'Nomor WhatsApp harus diawali dengan kode negara 62 (contoh: 62812...)'
         ]);
 
         $nasabah->update([

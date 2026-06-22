@@ -25,7 +25,7 @@
 
                     <div class="mb-5">
                         <label class="block text-gray-700 text-sm font-bold mb-2">No. HP <span class="text-red-500">*</span></label>
-                        <input type="text" name="no_hp" value="{{ old('no_hp') }}" class="w-full border-gray-300 focus:border-green-500 focus:ring focus:ring-green-200 rounded-lg shadow-sm transition-colors" required>
+                        <input type="text" name="no_hp" value="{{ old('no_hp', '62') }}" placeholder="62812..." class="w-full border-gray-300 focus:border-green-500 focus:ring focus:ring-green-200 rounded-lg shadow-sm transition-colors" required>
                         @error('no_hp') <p class="text-xs text-red-500 mt-1">{{ $message }}</p> @enderror
                     </div>
 
