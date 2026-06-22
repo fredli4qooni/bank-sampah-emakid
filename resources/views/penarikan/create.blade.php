@@ -42,12 +42,12 @@
                     <div class="mb-5 grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-gray-700 text-sm font-bold mb-2">Nominal Penarikan (Rp) <span class="text-red-500">*</span></label>
-                            <input type="number" name="nominal" x-model="nominalInput" value="{{ old('nominal') }}" min="100" class="w-full border-gray-300 focus:border-green-500 focus:ring focus:ring-green-200 rounded-lg shadow-sm transition-colors text-lg font-bold" required>
+                            <input type="text" name="nominal" x-model="nominalInputRaw" @input="formatInput('nominal')" value="{{ old('nominal') }}" class="w-full border-gray-300 focus:border-green-500 focus:ring focus:ring-green-200 rounded-lg shadow-sm transition-colors text-lg font-bold" required>
                             <p x-show="isNominalExceed" x-cloak class="text-xs text-red-500 mt-1 font-bold">Peringatan: Nominal penarikan melebihi saldo tersedia!</p>
                         </div>
                         <div>
                             <label class="block text-gray-700 text-sm font-bold mb-2">Biaya Admin (Rp)</label>
-                            <input type="number" name="biaya_admin" value="{{ old('biaya_admin', 0) }}" min="0" class="w-full border-gray-300 focus:border-green-500 focus:ring focus:ring-green-200 rounded-lg shadow-sm transition-colors text-lg font-bold">
+                            <input type="text" name="biaya_admin" x-model="biayaAdminInputRaw" @input="formatInput('admin')" value="{{ old('biaya_admin', 0) }}" class="w-full border-gray-300 focus:border-green-500 focus:ring focus:ring-green-200 rounded-lg shadow-sm transition-colors text-lg font-bold">
                             <p class="text-xs text-gray-500 mt-1">Diisi manual untuk mencatat biaya transfer antar bank. Biaya saat ini ditanggung Bank Sampah Emak.id (tidak memotong saldo nasabah).</p>
                         </div>
                     </div>
@@ -82,7 +82,7 @@
 
                     <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
                         <a href="{{ route('penarikan.index') }}" class="text-gray-500 hover:text-gray-700 font-medium px-4 py-2 transition-colors">Batal</a>
-                        <button type="submit" :disabled="isNominalExceed || !selectedNasabah || !nominalInput" :class="(isNominalExceed || !selectedNasabah || !nominalInput) ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700'" class="text-white font-bold py-2.5 px-6 rounded-lg shadow-md transition-colors focus:outline-none focus:ring-4 focus:ring-green-300">
+                        <button type="submit" :disabled="isNominalExceed || !selectedNasabah || !nominalInputRaw" :class="(isNominalExceed || !selectedNasabah || !nominalInputRaw) ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700'" class="text-white font-bold py-2.5 px-6 rounded-lg shadow-md transition-colors focus:outline-none focus:ring-4 focus:ring-green-300">
                             Proses Penarikan
                         </button>
                     </div>
@@ -115,11 +115,30 @@
                 Alpine.data('penarikanForm', () => ({
                     selectedNasabah: "",
                     currentSaldo: 0,
-                    nominalInput: "",
+                    nominalInputRaw: "",
+                    biayaAdminInputRaw: "",
                     metodeInput: "Tunai",
 
+                    get nominalInput() {
+                        return this.nominalInputRaw.replace(/\./g, '');
+                    },
+
+                    get biayaAdminInput() {
+                        return this.biayaAdminInputRaw.replace(/\./g, '');
+                    },
+
                     get isNominalExceed() {
-                        return Number(this.nominalInput) > Number(this.currentSaldo);
+                        return (Number(this.nominalInput) + Number(this.biayaAdminInput)) > Number(this.currentSaldo);
+                    },
+
+                    formatInput(type) {
+                        let val = type === 'nominal' ? this.nominalInputRaw : this.biayaAdminInputRaw;
+                        val = String(val).replace(/\D/g, '');
+                        if(val !== '') {
+                            val = new Intl.NumberFormat('id-ID').format(val);
+                        }
+                        if(type === 'nominal') this.nominalInputRaw = val;
+                        else this.biayaAdminInputRaw = val;
                     },
 
                     updateSaldo() {

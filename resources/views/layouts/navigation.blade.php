@@ -19,7 +19,9 @@
                 <span>{{ Auth::user()->role === 'penimbang' ? 'Home' : 'Dashboard' }}</span>
             </a>
 
+            @if(Auth::user()->role === 'admin' || Auth::user()->role === 'penimbang')
             <p class="px-4 pt-4 pb-2 text-xs font-bold text-gray-400 uppercase tracking-wider">1. Data Master</p>
+            @endif
 
             @if(Auth::user()->role === 'admin' || Auth::user()->role === 'penimbang')
             <a href="{{ route('nasabah.index') }}" class="flex items-center px-4 py-3 rounded-r-full {{ request()->routeIs('nasabah.*') ? 'bg-green-50 text-green-700 font-bold border-l-4 border-green-600' : 'text-gray-500 hover:bg-green-50 hover:text-green-700 transition-colors' }}">
@@ -45,7 +47,9 @@
             </a>
             @endcan
 
+            @if(Auth::user()->role === 'admin' || Auth::user()->role === 'penimbang')
             <p class="px-4 pt-4 pb-2 text-xs font-bold text-gray-400 uppercase tracking-wider">2. Manajemen Transaksi</p>
+            @endif
 
             @if(Auth::user()->role === 'penimbang')
             <a href="{{ route('transaksi.create') }}" class="flex items-center px-4 py-3 rounded-r-full {{ request()->routeIs('transaksi.create') ? 'bg-green-50 text-green-700 font-bold border-l-4 border-green-600' : 'text-gray-500 hover:bg-green-50 hover:text-green-700 transition-colors' }}">
@@ -73,7 +77,9 @@
             </a>
             @endcan
 
+            @if(Auth::user()->role === 'admin' || Auth::user()->role === 'pengelola')
             <p class="px-4 pt-4 pb-2 text-xs font-bold text-gray-400 uppercase tracking-wider">3. Laporan dan Backup Database</p>
+            @endif
 
             @if(Auth::user()->role === 'admin' || Auth::user()->role === 'pengelola')
             <a href="{{ route('laporan.index') }}" class="flex items-center px-4 py-3 rounded-r-full {{ request()->routeIs('laporan.*') ? 'bg-green-50 text-green-700 font-bold border-l-4 border-green-600' : 'text-gray-500 hover:bg-green-50 hover:text-green-700 transition-colors' }}">

@@ -27,9 +27,14 @@ class PenarikanController extends Controller
 
     public function store(Request $request)
     {
+        $request->merge([
+            'nominal' => str_replace('.', '', $request->nominal),
+            'biaya_admin' => str_replace('.', '', $request->biaya_admin ?? 0)
+        ]);
+
         $request->validate([
             'id_nasabah' => 'required|exists:nasabah,id_nasabah',
-            'nominal' => 'required|numeric|min:100',
+            'nominal' => 'required|numeric|min:10000',
             'biaya_admin' => 'nullable|numeric|min:0',
             'metode' => 'required|in:Tunai,Transfer Bank,E-Wallet (Dana/OVO/GoPay),Token Listrik,Lainnya',
             'keterangan' => 'nullable|string|max:255',
@@ -38,9 +43,10 @@ class PenarikanController extends Controller
         ]);
 
         $nasabah = Nasabah::findOrFail($request->id_nasabah);
+        $totalPenarikan = $request->nominal + ($request->biaya_admin ?? 0);
 
-        if ($request->nominal > $nasabah->saldo) {
-            return back()->withInput()->with('error', 'Gagal: Nominal penarikan (Rp ' . number_format($request->nominal, 0, ',', '.') . ') melebihi sisa saldo nasabah (Rp ' . number_format($nasabah->saldo, 0, ',', '.') . ').');
+        if ($totalPenarikan > $nasabah->saldo) {
+            return back()->withInput()->with('error', 'Gagal: Total penarikan + biaya admin (Rp ' . number_format($totalPenarikan, 0, ',', '.') . ') melebihi sisa saldo nasabah (Rp ' . number_format($nasabah->saldo, 0, ',', '.') . ').');
         }
 
         $buktiPath = null;
@@ -62,7 +68,7 @@ class PenarikanController extends Controller
                 'status' => 'Approved'
             ]);
 
-            $nasabah->decrement('saldo', $request->nominal);
+            $nasabah->decrement('saldo', $totalPenarikan);
 
             DB::commit();
             return redirect()->route('penarikan.index')->with('success', 'Penarikan saldo berhasil diproses. Saldo nasabah telah dikurangi.');

@@ -31,6 +31,7 @@
                                 <th class="px-6 py-4 font-bold">Waktu</th>
                                 <th class="px-6 py-4 font-bold">Nasabah</th>
                                 <th class="px-6 py-4 font-bold text-right">Nominal (Rp)</th>
+                                <th class="px-6 py-4 font-bold text-right">Total (Rp)</th>
                                 <th class="px-6 py-4 font-bold text-center">Metode</th>
                                 <th class="px-6 py-4 font-bold">Keterangan</th>
                                 <th class="px-6 py-4 font-bold">Admin</th>
@@ -42,11 +43,14 @@
                             <tr class="hover:bg-gray-50 transition-colors">
                                 <td class="px-6 py-4 font-medium">{{ $p->created_at->format('d/m/Y H:i') }}</td>
                                 <td class="px-6 py-4 font-bold text-gray-800">{{ $p->nasabah->nama }} <br><span class="text-xs text-gray-400 font-normal">{{ $p->nasabah->no_rekening }}</span></td>
-                                <td class="px-6 py-4 font-black text-red-600 text-right">
-                                    - {{ number_format($p->nominal, 0, ',', '.') }}
+                                <td class="px-6 py-4 font-black text-gray-800 text-right">
+                                    {{ number_format($p->nominal, 0, ',', '.') }}
                                     @if($p->biaya_admin > 0)
-                                        <div class="text-[10px] text-gray-500 font-normal mt-1 leading-tight">Biaya Admin:<br>Rp {{ number_format($p->biaya_admin, 0, ',', '.') }}</div>
+                                        <div class="text-[10px] text-gray-500 font-normal mt-1 leading-tight">+ Admin:<br>Rp {{ number_format($p->biaya_admin, 0, ',', '.') }}</div>
                                     @endif
+                                </td>
+                                <td class="px-6 py-4 font-black text-red-600 text-right">
+                                    - {{ number_format($p->nominal + $p->biaya_admin, 0, ',', '.') }}
                                 </td>
                                 <td class="px-6 py-4 text-center">
                                     <span class="bg-gray-100 text-gray-800 text-xs px-2.5 py-1 rounded-full font-bold border border-gray-200">{{ $p->metode }}</span>
@@ -80,7 +84,7 @@
                                 </td>
                             </tr>
                             @empty
-                            <tr><td colspan="6" class="text-center py-8 text-gray-400">Belum ada riwayat penarikan saldo.</td></tr>
+                            <tr><td colspan="7" class="text-center py-8 text-gray-400">Belum ada riwayat penarikan saldo.</td></tr>
                             @endforelse
                         </tbody>
                     </table>

@@ -96,16 +96,15 @@
     </main>
 
     <footer class="bg-gray-900 text-gray-300 py-6 lg:py-6 mt-auto">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <p class="text-sm text-gray-500">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center text-center">
+            <p class="text-sm text-gray-500 mb-2">
                 &copy; {{ date('Y') }} Bank Sampah Emak.id. Hak Cipta Dilindungi.
             </p>
-            <div class="flex gap-4 text-sm text-gray-500">
+            <div class="flex gap-4 text-sm text-gray-500 justify-center">
                 <a href="#" class="hover:text-white transition-colors">Syarat & Ketentuan</a>
                 <span>|</span>
                 <a href="#" class="hover:text-white transition-colors">Kebijakan Privasi</a>
             </div>
-
         </div>
     </footer>
 

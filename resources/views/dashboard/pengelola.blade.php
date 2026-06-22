@@ -70,45 +70,7 @@
                 </div>
             </div>
 
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-xl border border-gray-100">
-                <div class="p-6">
-                    <h3 class="text-lg font-bold mb-4 text-gray-800">Transaksi Terbaru</h3>
-                    <div class="overflow-x-auto rounded-lg border border-gray-200">
-                        <table class="w-full text-sm text-left text-gray-600">
-                            <thead class="text-xs text-green-800 uppercase bg-green-50 border-b border-gray-200">
-                                <tr>
-                                    <th class="px-6 py-4 font-bold">Waktu</th>
-                                    <th class="px-6 py-4 font-bold">Nasabah</th>
-                                    <th class="px-6 py-4 font-bold">Nilai (Rp)</th>
-                                    <th class="px-6 py-4 font-bold">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-100">
-                                @forelse($transaksiTerbaru as $trx)
-                                <tr class="hover:bg-gray-50 transition-colors">
-                                    <td class="px-6 py-4 font-medium">{{ $trx->created_at->format('d/m/Y H:i') }}</td>
-                                    <td class="px-6 py-4 font-bold text-gray-800">{{ $trx->nasabah->nama }}</td>
-                                    <td class="px-6 py-4 font-semibold text-gray-900">Rp {{ number_format($trx->total_nilai, 0, ',', '.') }}</td>
-                                    <td class="px-6 py-4">
-                                        @if($trx->status_validasi == 'pending')
-                                        <span class="bg-yellow-100 text-yellow-800 text-xs px-3 py-1 rounded-full font-bold uppercase border border-yellow-200">Pending</span>
-                                        @elseif($trx->status_validasi == 'valid')
-                                        <span class="bg-green-100 text-green-800 text-xs px-3 py-1 rounded-full font-bold uppercase border border-green-200">Valid</span>
-                                        @else
-                                        <span class="bg-blue-100 text-blue-800 text-xs px-3 py-1 rounded-full font-bold uppercase border border-blue-200">Terkoreksi</span>
-                                        @endif
-                                    </td>
-                                </tr>
-                                @empty
-                                <tr>
-                                    <td colspan="4" class="text-center py-8 text-gray-400">Belum ada transaksi di sistem.</td>
-                                </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+
 
         </div>
     </div>

@@ -76,8 +76,8 @@ class ValidasiController extends Controller
     {
         $request->validate([
             'ids' => 'required|string',
-            'berat_gudang' => 'required|numeric|min:0',
             'total_berat_lapangan' => 'required|numeric|min:0',
+            'berat_gudang' => 'required|numeric|min:0|max:' . $request->total_berat_lapangan,
         ]);
 
         $ids = explode(',', $request->ids);
@@ -233,8 +233,8 @@ class ValidasiController extends Controller
     public function process(Request $request, int $id_transaksi)
     {
         $request->validate([
-            'total_berat_gudang' => 'required|numeric|min:0',
             'total_berat_lapangan' => 'required|numeric|min:0',
+            'total_berat_gudang' => 'required|numeric|min:0|max:' . $request->total_berat_lapangan,
         ]);
 
         $transaksi = Transaksi::with('nasabah')->findOrFail($id_transaksi);
