@@ -100,20 +100,12 @@ class TransaksiController extends Controller
     {
         $transaksi = Transaksi::with(['nasabah', 'detail.jenisSampah'])->findOrFail($id_transaksi);
         
-        if ($transaksi->status_validasi !== 'pending') {
-            return redirect()->route('validasi.index')->with('error', 'Hanya transaksi berstatus pending yang dapat dikoreksi.');
-        }
-
         return view('transaksi.edit', compact('transaksi'));
     }
 
     public function update(Request $request, int $id_transaksi)
     {
-        $transaksi = Transaksi::with('detail')->findOrFail($id_transaksi);
-
-        if ($transaksi->status_validasi !== 'pending') {
-            return redirect()->route('validasi.index')->with('error', 'Transaksi sudah diproses dan tidak dapat diubah.');
-        }
+        $transaksi = Transaksi::with(['detail', 'nasabah'])->findOrFail($id_transaksi);
 
         $request->validate([
             'berat' => 'required|array',
@@ -124,6 +116,7 @@ class TransaksiController extends Controller
 
         DB::beginTransaction();
         try {
+            $totalNilaiLama = $transaksi->total_nilai;
             $totalNilaiBaru = 0;
 
             foreach ($request->berat as $id_detail => $beratBaru) {
@@ -146,8 +139,13 @@ class TransaksiController extends Controller
                 'total_nilai' => $totalNilaiBaru
             ]);
 
+            if (in_array($transaksi->status_validasi, ['valid', 'terkoreksi'])) {
+                $transaksi->nasabah->decrement('saldo', $totalNilaiLama);
+                $transaksi->nasabah->increment('saldo', $totalNilaiBaru);
+            }
+
             DB::commit();
-            return redirect()->route('validasi.index')->with('success', 'Transaksi atas nama ' . $transaksi->nasabah->nama . ' berhasil dikoreksi.');
+            return redirect()->route('transaksi.index')->with('success', 'Transaksi atas nama ' . $transaksi->nasabah->nama . ' berhasil dikoreksi.');
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Terjadi kesalahan sistem: ' . $e->getMessage());
@@ -170,13 +168,13 @@ class TransaksiController extends Controller
     public function destroy(int $id_transaksi)
     {
         $transaksi = Transaksi::findOrFail($id_transaksi);
-        
-        if ($transaksi->status_validasi !== 'pending') {
-            return back()->with('error', 'Hanya transaksi berstatus pending yang dapat dihapus.');
-        }
 
         DB::beginTransaction();
         try {
+            if (in_array($transaksi->status_validasi, ['valid', 'terkoreksi'])) {
+                $transaksi->nasabah->decrement('saldo', $transaksi->total_nilai);
+            }
+
             \App\Models\DetailTransaksi::where('id_transaksi', $id_transaksi)->delete();
             $transaksi->delete();
             

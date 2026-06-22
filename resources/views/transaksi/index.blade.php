@@ -44,16 +44,12 @@
                                 <td class="px-6 py-4">
                                     <div class="flex flex-col gap-2 min-w-[120px]">
                                         <div class="flex gap-2 w-full">
-                                            @if($t->status_validasi == 'pending')
                                                 <a href="{{ route('transaksi.edit', $t->id_transaksi) }}" class="flex-1 text-white bg-yellow-500 hover:bg-yellow-600 text-xs font-bold py-1.5 px-2 rounded text-center transition-colors shadow-sm">Edit</a>
-                                                <form action="{{ route('transaksi.destroy', $t->id_transaksi) }}" method="POST" class="flex-1 m-0" onsubmit="return confirm('Yakin ingin menghapus transaksi ini? Data akan hilang selamanya.');">
+                                                <form action="{{ route('transaksi.destroy', $t->id_transaksi) }}" method="POST" class="flex-1 m-0" onsubmit="return confirm('Yakin ingin menghapus transaksi ini? Jika transaksi sudah valid, saldo nasabah akan ditarik kembali.');">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit" class="w-full text-white bg-red-600 hover:bg-red-700 text-xs font-bold py-1.5 px-2 rounded text-center transition-colors shadow-sm">Hapus</button>
                                                 </form>
-                                            @else
-                                                <span class="bg-gray-100 text-gray-500 text-[10px] uppercase tracking-wider font-bold py-1.5 px-2 rounded text-center w-full">Selesai (Tidak dapat diubah)</span>
-                                            @endif
                                         </div>
                                         <div class="flex gap-2 w-full">
                                             <a href="{{ route('transaksi.cetak', $t->id_transaksi) }}" target="_blank" class="flex-1 text-white bg-blue-600 hover:bg-blue-700 text-xs font-bold py-1.5 px-2 rounded text-center inline-flex items-center justify-center gap-1 transition-colors shadow-sm">
