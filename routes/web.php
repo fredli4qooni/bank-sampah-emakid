@@ -40,6 +40,7 @@ Route::middleware('auth')->group(function () {
 
 
 Route::middleware(['auth', 'role:admin,penimbang'])->group(function () {
+    Route::post('/nasabah/import', [NasabahController::class, 'import'])->name('nasabah.import');
     Route::resource('nasabah', NasabahController::class);
     Route::get('/nasabah/{nasabah}/cetak', [NasabahController::class, 'cetakBuku'])->name('nasabah.cetak');
 

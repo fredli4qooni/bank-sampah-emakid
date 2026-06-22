@@ -143,6 +143,21 @@
                     <p class="text-gray-600 text-xs">M57W+665, Natar, Kec. Natar, Kabupaten Lampung Selatan, Lampung 35362, Indonesia</p>
                 </div>
             </div>
+
+            <!-- Lokasi Map -->
+            <div class="mt-12 rounded-2xl overflow-hidden shadow-md border border-green-200 bg-white p-2">
+                <iframe 
+                    src="https://maps.google.com/maps?q=M57W%2B665,%20Natar,%20Kec.%20Natar,%20Kabupaten%20Lampung%20Selatan,%20Lampung%2035362,%20Indonesia&t=&z=15&ie=UTF8&iwloc=&output=embed" 
+                    width="100%" 
+                    height="400" 
+                    class="rounded-xl"
+                    style="border:0;" 
+                    allowfullscreen="" 
+                    loading="lazy" 
+                    referrerpolicy="no-referrer-when-downgrade">
+                </iframe>
+            </div>
+
         </div>
     </section>
 @endsection

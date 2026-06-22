@@ -6,13 +6,54 @@ use App\Models\Nasabah;
 use App\Models\Unit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\NasabahImport;
 
 class NasabahController extends Controller
 {
-    public function index()
+    public function import(Request $request)
     {
-        $nasabah = Nasabah::with('unit')->orderBy('id_nasabah', 'desc')->get();
-        return view('nasabah.index', compact('nasabah'));
+        Gate::authorize('isAdmin');
+
+        $request->validate([
+            'file_excel' => 'required|mimes:xlsx,xls,csv|max:2048'
+        ]);
+
+        try {
+            $import = new NasabahImport;
+            Excel::import($import, $request->file('file_excel'));
+            
+            $msg = 'Berhasil mengimpor ' . $import->importedCount . ' data nasabah baru.';
+            if ($import->skippedCount > 0) {
+                $msg .= ' Terdapat ' . $import->skippedCount . ' data duplikat (No Rekening sudah ada) yang otomatis dilewati.';
+            }
+            
+            return redirect()->route('nasabah.index')->with('success', $msg);
+        } catch (\Exception $e) {
+            return redirect()->route('nasabah.index')->with('error', 'Gagal mengimpor data: ' . $e->getMessage());
+        }
+    }
+
+    public function index(Request $request)
+    {
+        $query = Nasabah::with('unit')->orderBy('id_nasabah', 'desc');
+
+        if ($request->has('search') && $request->search != '') {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('nama', 'like', "%{$search}%")
+                  ->orWhere('no_rekening', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->has('id_unit') && $request->id_unit != '') {
+            $query->where('id_unit', $request->id_unit);
+        }
+
+        $nasabah = $query->paginate(10)->withQueryString();
+        $units = Unit::where('status', 'aktif')->orderBy('nama_unit', 'asc')->get();
+
+        return view('nasabah.index', compact('nasabah', 'units'));
     }
 
     public function create()
@@ -27,11 +68,13 @@ class NasabahController extends Controller
         Gate::authorize('isAdmin');
 
         $request->validate([
-            'nama' => 'required|string|max:100',
+            'nama' => 'required|string|max:100|unique:nasabah,nama',
             'no_hp' => 'required|string|max:20',
             'alamat' => 'nullable|string',
             'kecamatan' => 'nullable|string|max:50',
             'id_unit' => 'required|exists:units,id_unit',
+        ], [
+            'nama.unique' => 'Nama nasabah sudah terdaftar. Silakan gunakan nama lain atau tambahkan nama belakang.'
         ]);
 
         $lastNasabah = Nasabah::orderBy('id_nasabah', 'desc')->first();
@@ -63,11 +106,13 @@ class NasabahController extends Controller
         Gate::authorize('isAdmin');
 
         $request->validate([
-            'nama' => 'required|string|max:100',
+            'nama' => 'required|string|max:100|unique:nasabah,nama,' . $nasabah->id_nasabah . ',id_nasabah',
             'no_hp' => 'required|string|max:20',
             'alamat' => 'nullable|string',
             'kecamatan' => 'nullable|string|max:50',
             'id_unit' => 'required|exists:units,id_unit',
+        ], [
+            'nama.unique' => 'Nama nasabah sudah terdaftar. Silakan gunakan nama lain atau tambahkan nama belakang.'
         ]);
 
         $nasabah->update([
