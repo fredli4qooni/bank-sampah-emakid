@@ -36,6 +36,8 @@
                         Kami</a>
                     <a href="{{ route('program') }}"
                         class="{{ request()->routeIs('program') ? 'text-green-600 font-bold' : 'text-gray-600 hover:text-green-600 font-medium' }} transition-colors">Program</a>
+                    <a href="{{ route('dokumentasi.public') }}"
+                        class="{{ request()->routeIs('dokumentasi.public') ? 'text-green-600 font-bold' : 'text-gray-600 hover:text-green-600 font-medium' }} transition-colors">Dokumentasi</a>
                     <a href="{{ route('berita') }}"
                         class="{{ request()->routeIs('berita') ? 'text-green-600 font-bold' : 'text-gray-600 hover:text-green-600 font-medium' }} transition-colors">Berita</a>
 
@@ -74,6 +76,8 @@
                     Kami</a>
                 <a href="{{ route('program') }}"
                     class="block px-3 py-2 rounded-md font-medium {{ request()->routeIs('program') ? 'bg-green-50 text-green-600' : 'text-gray-700 hover:bg-gray-50' }}">Program</a>
+                <a href="{{ route('dokumentasi.public') }}"
+                    class="block px-3 py-2 rounded-md font-medium {{ request()->routeIs('dokumentasi.public') ? 'bg-green-50 text-green-600' : 'text-gray-700 hover:bg-gray-50' }}">Dokumentasi</a>
                 <a href="{{ route('berita') }}"
                     class="block px-3 py-2 rounded-md font-medium {{ request()->routeIs('berita') ? 'bg-green-50 text-green-600' : 'text-gray-700 hover:bg-gray-50' }}">Berita</a>
                 <div class="pt-4 mt-2 border-t border-gray-100">

@@ -21,6 +21,7 @@ Route::get('/', [PublicController::class, 'index'])->name('home');
 Route::get('/tentang-kami', [PublicController::class, 'tentangKami'])->name('tentang-kami');
 Route::get('/program', [PublicController::class, 'program'])->name('program');
 Route::get('/berita', [PublicController::class, 'berita'])->name('berita');
+Route::get('/galeri', [PublicController::class, 'dokumentasi'])->name('dokumentasi.public');
 
 Route::get('/dashboard', function () {
     $url = match (Auth::user()->role) {
@@ -59,6 +60,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::resource('units', UnitController::class);
 
     Route::resource('jenis-sampah', JenisSampahController::class);
+    Route::resource('dokumentasi', \App\Http\Controllers\DokumentasiController::class);
 
     Route::post('validasi/bulk', [App\Http\Controllers\ValidasiController::class, 'bulkProcess'])->name('validasi.bulk');
     Route::post('/validasi/{id}/process', [ValidasiController::class, 'process'])->name('validasi.process');

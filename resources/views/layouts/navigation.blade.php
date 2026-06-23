@@ -45,6 +45,11 @@
                 <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
                 <span>Pengguna</span>
             </a>
+
+            <a href="{{ route('dokumentasi.index') }}" class="flex items-center px-4 py-3 rounded-r-full {{ request()->routeIs('dokumentasi.*') ? 'bg-green-50 text-green-700 font-bold border-l-4 border-green-600' : 'text-gray-500 hover:bg-green-50 hover:text-green-700 transition-colors' }}">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                <span>Dokumentasi</span>
+            </a>
             @endcan
 
             @if(Auth::user()->role === 'admin' || Auth::user()->role === 'penimbang')

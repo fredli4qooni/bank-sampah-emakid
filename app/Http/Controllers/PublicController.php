@@ -57,4 +57,10 @@ class PublicController extends Controller
 
         return view('public.berita', compact('berita'));
     }
+
+    public function dokumentasi()
+    {
+        $dokumentasi = \App\Models\Dokumentasi::latest()->paginate(12);
+        return view('public.dokumentasi', compact('dokumentasi'));
+    }
 }
