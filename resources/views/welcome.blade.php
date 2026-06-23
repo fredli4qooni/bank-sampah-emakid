@@ -140,14 +140,14 @@
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
                     </div>
                     <h3 class="text-lg font-bold text-gray-900 mb-2">Alamat Kantor</h3>
-                    <p class="text-gray-600 text-xs">M57W+665, Natar, Kec. Natar, Kabupaten Lampung Selatan, Lampung 35362, Indonesia</p>
+                    <p class="text-gray-600 text-xs">Perum, Sohibanila, Kec. Natar, Kabupaten Lampung Selatan, Lampung 35111</p>
                 </div>
             </div>
 
             <!-- Lokasi Map -->
             <div class="mt-12 rounded-2xl overflow-hidden shadow-md border border-green-200 bg-white p-2">
                 <iframe 
-                    src="https://maps.google.com/maps?q=M57W%2B665,%20Natar,%20Kec.%20Natar,%20Kabupaten%20Lampung%20Selatan,%20Lampung%2035362,%20Indonesia&t=&z=15&ie=UTF8&iwloc=&output=embed" 
+                    src="https://maps.google.com/maps?q=Perum,%20Sohibanila,%20Kec.%20Natar,%20Kabupaten%20Lampung%20Selatan,%20Lampung%2035111&t=&z=15&ie=UTF8&iwloc=&output=embed" 
                     width="100%" 
                     height="400" 
                     class="rounded-xl"

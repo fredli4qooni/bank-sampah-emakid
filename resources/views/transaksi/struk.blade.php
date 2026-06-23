@@ -47,7 +47,7 @@
 </head>
 <body>
     <h2>BANK SAMPAH EMAK.ID</h2>
-    <p>Jl. Contoh Alamat No. 123</p>
+    <p>Perum, Sohibanila, Kec. Natar<br>Kab. Lampung Selatan, Lampung 35111</p>
     <div class="divider"></div>
     
     <table style="font-size: 10px;">
