@@ -25,7 +25,7 @@ class NasabahController extends Controller
             
             $msg = 'Berhasil mengimpor ' . $import->importedCount . ' data nasabah baru.';
             if ($import->skippedCount > 0) {
-                $msg .= ' Terdapat ' . $import->skippedCount . ' data duplikat (No Rekening sudah ada) yang otomatis dilewati.';
+                $msg .= ' Terdapat ' . $import->skippedCount . ' data duplikat (Nama sudah ada) yang otomatis dilewati.';
             }
             
             return redirect()->route('nasabah.index')->with('success', $msg);
