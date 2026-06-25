@@ -9,11 +9,33 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-xl border border-gray-100 p-6">
                 
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-lg font-bold text-gray-800">{{ Auth::user()->role === 'admin' ? 'Data Keseluruhan Setoran Sampah' : 'Riwayat Transaksi Setoran Sampah' }}</h3>
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                    <h3 class="text-lg font-bold text-gray-800 shrink-0">{{ Auth::user()->role === 'admin' ? 'Data Keseluruhan Setoran Sampah' : 'Riwayat Transaksi Setoran Sampah' }}</h3>
+
+                    @if(Auth::user()->role === 'admin' || Auth::user()->role === 'pengelola')
+                    <form action="{{ route('transaksi.index') }}" method="GET" class="flex flex-col sm:flex-row items-center gap-2 w-full md:w-auto justify-end">
+                        <div class="flex items-center gap-2 w-full sm:w-auto">
+                            <input type="date" name="start_date" value="{{ request('start_date') }}" class="rounded-lg border-gray-300 text-sm focus:ring-green-500 focus:border-green-500 w-full sm:w-auto" title="Tanggal Awal">
+                            <span class="text-gray-500 font-medium">-</span>
+                            <input type="date" name="end_date" value="{{ request('end_date') }}" class="rounded-lg border-gray-300 text-sm focus:ring-green-500 focus:border-green-500 w-full sm:w-auto" title="Tanggal Akhir">
+                        </div>
+                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari Nasabah..." class="rounded-lg border-gray-300 text-sm focus:ring-green-500 focus:border-green-500 w-full sm:w-auto">
+                        <div class="flex items-center gap-2 w-full sm:w-auto">
+                            <button type="submit" class="bg-gray-800 hover:bg-gray-900 text-white font-bold py-2 px-4 rounded-lg shadow-sm text-sm w-full sm:w-auto">Filter</button>
+                            @if(request('start_date') || request('end_date') || request('search'))
+                                <a href="{{ route('transaksi.index') }}" class="bg-red-50 hover:bg-red-100 text-red-600 font-bold py-2 px-4 rounded-lg shadow-sm text-sm border border-red-200 w-full sm:w-auto text-center">Reset</a>
+                            @endif
+                        </div>
+                    </form>
+                    @endif
                 </div>
 
                 <div class="overflow-x-auto rounded-lg border border-gray-200">
+                    @if(session('success'))
+                    <div class="mb-4 p-4 rounded-lg bg-green-50 text-green-800 border border-green-200 text-sm font-medium">
+                        {{ session('success') }}
+                    </div>
+                    @endif
                     <table class="w-full text-sm text-left text-gray-600">
                         <thead class="text-xs text-gray-700 uppercase bg-gray-50 border-b border-gray-200">
                             <tr>
@@ -23,6 +45,7 @@
                                 <th class="px-6 py-4 font-bold">Jenis Sampah</th>
                                 <th class="px-6 py-4 font-bold">Berat</th>
                                 <th class="px-6 py-4 font-bold">Total Nilai (Rp)</th>
+                                <th class="px-6 py-4 font-bold text-center">Pengoreksi</th>
                                 <th class="px-6 py-4 font-bold text-center">Aksi</th>
                             </tr>
                         </thead>
@@ -48,7 +71,17 @@
                                     @endforeach
                                 </td>
                                 <td class="px-6 py-4 font-black text-green-700 whitespace-nowrap">Rp {{ number_format($t->total_nilai, 0, ',', '.') }}</td>
-                                <td class="px-6 py-4">
+                                <td class="px-6 py-4 text-center">
+                                    @if($t->status_validasi === 'terkoreksi' && $t->logKoreksi->count() > 0)
+                                        <span class="inline-flex items-center gap-1 bg-yellow-50 text-yellow-700 px-2 py-1 rounded text-xs font-bold border border-yellow-200">
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                            {{ $t->logKoreksi->last()->admin->name ?? 'Admin' }}
+                                        </span>
+                                    @else
+                                        <span class="text-gray-400">-</span>
+                                    @endif
+                                </td>
+                                <td class="px-6 py-4 text-center">
                                     <div class="flex flex-col gap-2 min-w-[120px]">
                                         <div class="flex gap-2 w-full">
                                                 <a href="{{ route('transaksi.edit', $t->id_transaksi) }}" class="flex-1 text-white bg-yellow-500 hover:bg-yellow-600 text-xs font-bold py-1.5 px-2 rounded text-center transition-colors shadow-sm">Edit</a>
@@ -79,7 +112,7 @@
                                 </td>
                             </tr>
                             @empty
-                            <tr><td colspan="6" class="text-center py-8 text-gray-400">{{ Auth::user()->role === 'admin' ? 'Belum ada riwayat transaksi di sistem.' : 'Belum ada riwayat setoran yang Anda input.' }}</td></tr>
+                            <tr><td colspan="8" class="text-center py-8 text-gray-400">{{ Auth::user()->role === 'admin' ? 'Belum ada riwayat transaksi di sistem.' : 'Belum ada riwayat setoran yang Anda input.' }}</td></tr>
                             @endforelse
                         </tbody>
                     </table>

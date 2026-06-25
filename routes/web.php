@@ -20,7 +20,7 @@ use App\Http\Controllers\ChatbotSettingController;
 Route::get('/', [PublicController::class, 'index'])->name('home');
 Route::get('/tentang-kami', [PublicController::class, 'tentangKami'])->name('tentang-kami');
 Route::get('/program', [PublicController::class, 'program'])->name('program');
-Route::get('/berita', [PublicController::class, 'berita'])->name('berita');
+
 Route::get('/galeri', [PublicController::class, 'dokumentasi'])->name('dokumentasi.public');
 Route::post('/pendaftaran-unit', [PublicController::class, 'storeCalonUnit'])->name('pendaftaran.unit');
 

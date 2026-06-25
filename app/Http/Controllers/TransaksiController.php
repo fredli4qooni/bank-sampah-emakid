@@ -13,16 +13,33 @@ use Barryvdh\DomPDF\Facade\Pdf;
 
 class TransaksiController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $query = Transaksi::with(['nasabah.unit', 'detail.jenisSampah']);
+        $query = Transaksi::with(['nasabah.unit', 'detail.jenisSampah', 'logKoreksi.admin']);
         
         // Jika penimbang, hanya lihat setoran miliknya. Jika admin, lihat semua.
         if (Auth::user()->role === 'penimbang') {
             $query->where('id_user', Auth::id());
         }
 
-        $transaksi = $query->orderBy('created_at', 'desc')->paginate(10);
+        // Filter berdasarkan tanggal
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+            $query->whereBetween(DB::raw('DATE(created_at)'), [$request->start_date, $request->end_date]);
+        } elseif ($request->filled('start_date')) {
+            $query->where(DB::raw('DATE(created_at)'), '>=', $request->start_date);
+        } elseif ($request->filled('end_date')) {
+            $query->where(DB::raw('DATE(created_at)'), '<=', $request->end_date);
+        }
+
+        // Filter pencarian nasabah (berdasarkan nama atau no rekening)
+        if ($request->filled('search')) {
+            $query->whereHas('nasabah', function ($q) use ($request) {
+                $q->where('nama', 'like', '%' . $request->search . '%')
+                  ->orWhere('no_rekening', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        $transaksi = $query->orderBy('created_at', 'desc')->paginate(10)->withQueryString();
 
         return view('transaksi.index', compact('transaksi'));
     }
@@ -135,11 +152,22 @@ class TransaksiController extends Controller
                 $totalNilaiBaru += $subtotal;
             }
 
+            $statusLama = $transaksi->status_validasi;
+
             $transaksi->update([
-                'total_nilai' => $totalNilaiBaru
+                'total_nilai' => $totalNilaiBaru,
+                'status_validasi' => 'terkoreksi'
             ]);
 
-            if (in_array($transaksi->status_validasi, ['valid', 'terkoreksi'])) {
+            \App\Models\LogKoreksi::create([
+                'id_transaksi' => $transaksi->id_transaksi,
+                'id_admin' => Auth::id(),
+                'field_sebelum' => json_encode(['total_nilai' => $totalNilaiLama]),
+                'field_sesudah' => json_encode(['total_nilai' => $totalNilaiBaru]),
+                'catatan_alasan' => 'Dikoreksi melalui form edit transaksi',
+            ]);
+
+            if (in_array($statusLama, ['valid', 'terkoreksi'])) {
                 $transaksi->nasabah->decrement('saldo', $totalNilaiLama);
                 $transaksi->nasabah->increment('saldo', $totalNilaiBaru);
             }

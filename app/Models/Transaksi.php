@@ -34,4 +34,9 @@ class Transaksi extends Model
     {
         return $this->hasMany(DetailTransaksi::class, 'id_transaksi');
     }
+
+    public function logKoreksi()
+    {
+        return $this->hasMany(LogKoreksi::class, 'id_transaksi');
+    }
 }
