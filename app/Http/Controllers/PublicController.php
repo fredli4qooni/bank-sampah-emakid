@@ -63,4 +63,18 @@ class PublicController extends Controller
         $dokumentasi = \App\Models\Dokumentasi::latest()->paginate(12);
         return view('public.dokumentasi', compact('dokumentasi'));
     }
+
+    public function storeCalonUnit(Request $request)
+    {
+        $request->validate([
+            'nama_lengkap' => 'required|string|max:255',
+            'no_wa' => 'required|string|max:20',
+            'alamat_lengkap' => 'required|string',
+            'jadwal_edukasi' => 'required|date',
+        ]);
+
+        \App\Models\CalonUnit::create($request->all());
+
+        return back()->with('success', 'Pendaftaran berhasil dikirim! Tim kami akan segera menghubungi Anda melalui WhatsApp.');
+    }
 }

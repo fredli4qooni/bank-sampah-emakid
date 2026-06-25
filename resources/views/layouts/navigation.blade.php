@@ -36,6 +36,11 @@
                 <span>Unit</span>
             </a>
 
+            <a href="{{ route('calon-unit.index') }}" class="flex items-center px-4 py-3 rounded-r-full {{ request()->routeIs('calon-unit.*') ? 'bg-green-50 text-green-700 font-bold border-l-4 border-green-600' : 'text-gray-500 hover:bg-green-50 hover:text-green-700 transition-colors' }}">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" /></svg>
+                <span>Calon Unit</span>
+            </a>
+
             <a href="{{ route('jenis-sampah.index') }}" class="flex items-center px-4 py-3 rounded-r-full {{ request()->routeIs('jenis-sampah.*') ? 'bg-green-50 text-green-700 font-bold border-l-4 border-green-600' : 'text-gray-500 hover:bg-green-50 hover:text-green-700 transition-colors' }}">
                 <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
                 <span>Jenis Sampah</span>
@@ -87,9 +92,14 @@
             @endif
 
             @if(Auth::user()->role === 'admin' || Auth::user()->role === 'pengelola')
-            <a href="{{ route('laporan.index') }}" class="flex items-center px-4 py-3 rounded-r-full {{ request()->routeIs('laporan.*') ? 'bg-green-50 text-green-700 font-bold border-l-4 border-green-600' : 'text-gray-500 hover:bg-green-50 hover:text-green-700 transition-colors' }}">
+            <a href="{{ route('laporan.index') }}" class="flex items-center px-4 py-3 rounded-r-full {{ request()->routeIs('laporan.index') || request()->routeIs('laporan.pdf') ? 'bg-green-50 text-green-700 font-bold border-l-4 border-green-600' : 'text-gray-500 hover:bg-green-50 hover:text-green-700 transition-colors' }}">
                 <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
                 <span>Laporan Operasional</span>
+            </a>
+
+            <a href="{{ route('laporan.validasi') }}" class="flex items-center px-4 py-3 rounded-r-full {{ request()->routeIs('laporan.validasi') ? 'bg-green-50 text-green-700 font-bold border-l-4 border-green-600' : 'text-gray-500 hover:bg-green-50 hover:text-green-700 transition-colors' }}">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                <span>Laporan Validasi</span>
             </a>
             @endif
 

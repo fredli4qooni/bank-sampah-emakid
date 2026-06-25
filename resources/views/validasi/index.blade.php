@@ -175,6 +175,53 @@
                 </div>
             </div>
 
+            <!-- Riwayat Validasi Section -->
+            <div class="mt-8 bg-white overflow-hidden shadow-sm sm:rounded-xl border border-gray-100">
+                <div class="p-5 bg-gray-50 border-b border-gray-200">
+                    <h3 class="font-bold text-gray-800 text-sm">Riwayat Validasi</h3>
+                    <p class="text-xs text-gray-500 mt-1">Daftar transaksi yang sudah divalidasi atau dikoreksi pada rentang tanggal filter di atas.</p>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left text-gray-600">
+                        <thead class="text-xs text-gray-700 uppercase bg-gray-100 border-b border-gray-200">
+                            <tr>
+                                <th class="px-6 py-4 font-bold">Waktu</th>
+                                <th class="px-6 py-4 font-bold">Penimbang</th>
+                                <th class="px-6 py-4 font-bold">Nasabah</th>
+                                <th class="px-6 py-4 font-bold">Total Berat</th>
+                                <th class="px-6 py-4 font-bold">Total Nilai</th>
+                                <th class="px-6 py-4 font-bold text-center">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100">
+                            @php 
+                                $riwayatValid = $riwayatTransactions->filter(function($t) { 
+                                    return $t->status_validasi !== 'pending'; 
+                                });
+                            @endphp
+                            @forelse($riwayatValid as $trx)
+                            <tr class="hover:bg-gray-50 transition-colors">
+                                <td class="px-6 py-4 font-medium">{{ $trx->created_at->format('d M Y H:i') }}</td>
+                                <td class="px-6 py-4 text-gray-800 font-bold">{{ $trx->penimbang->name }}</td>
+                                <td class="px-6 py-4 font-bold text-gray-800">{{ $trx->nasabah->nama }} <br><span class="text-xs text-gray-400 font-normal">{{ $trx->nasabah->no_rekening }}</span></td>
+                                <td class="px-6 py-4 font-bold">{{ number_format($trx->detail->sum('berat'), 2, ',', '.') }} kg</td>
+                                <td class="px-6 py-4 font-black text-green-700">Rp {{ number_format($trx->total_nilai, 0, ',', '.') }}</td>
+                                <td class="px-6 py-4 text-center">
+                                    @if($trx->status_validasi == 'valid')
+                                        <span class="bg-green-100 text-green-700 text-xs px-2.5 py-1 rounded-full font-bold">Valid</span>
+                                    @elseif($trx->status_validasi == 'terkoreksi')
+                                        <span class="bg-blue-100 text-blue-700 text-xs px-2.5 py-1 rounded-full font-bold">Terkoreksi</span>
+                                    @endif
+                                </td>
+                            </tr>
+                            @empty
+                            <tr><td colspan="6" class="text-center py-8 text-gray-400 italic">Belum ada riwayat validasi pada rentang tanggal ini.</td></tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
         </div>
     </div>
 </x-app-layout>

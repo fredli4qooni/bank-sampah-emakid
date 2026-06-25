@@ -15,7 +15,7 @@ class TransaksiController extends Controller
 {
     public function index()
     {
-        $query = Transaksi::with(['nasabah', 'detail.jenisSampah']);
+        $query = Transaksi::with(['nasabah.unit', 'detail.jenisSampah']);
         
         // Jika penimbang, hanya lihat setoran miliknya. Jika admin, lihat semua.
         if (Auth::user()->role === 'penimbang') {

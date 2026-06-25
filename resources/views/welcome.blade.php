@@ -99,6 +99,78 @@
             </div>
         </div>
     </section>
+    <!-- Registration Section -->
+    <section id="pendaftaran-unit" class="py-16 bg-white relative overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="flex flex-col lg:flex-row gap-12 items-center">
+                <div class="w-full lg:w-1/2">
+                    <h2 class="text-3xl font-black text-gray-900 tracking-tight mb-4">Ingin Menjadi Bagian dari Kami?</h2>
+                    <p class="text-gray-600 mb-6 leading-relaxed">
+                        Daftarkan wilayah Anda untuk menjadi Bank Sampah Unit Emak.id. Dengan bergabung, Anda turut berkontribusi dalam menjaga kebersihan lingkungan sekaligus mendapatkan manfaat ekonomi dari sampah daur ulang.
+                    </p>
+                    <ul class="space-y-4 mb-8">
+                        <li class="flex items-start">
+                            <div class="flex-shrink-0 w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-600 mt-1">
+                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+                            </div>
+                            <div class="ml-4">
+                                <h4 class="text-lg font-bold text-gray-900">Edukasi Gratis</h4>
+                                <p class="text-sm text-gray-500">Dapatkan pelatihan gratis mengenai manajemen bank sampah.</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="flex-shrink-0 w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-600 mt-1">
+                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+                            </div>
+                            <div class="ml-4">
+                                <h4 class="text-lg font-bold text-gray-900">Pendampingan</h4>
+                                <p class="text-sm text-gray-500">Kami siap mendampingi operasional awal bank sampah Anda.</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="w-full lg:w-1/2">
+                    <div class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100 relative">
+                        <div class="absolute -top-4 -right-4 w-20 h-20 bg-green-100 rounded-full blur-2xl opacity-60"></div>
+                        <h3 class="text-2xl font-bold text-gray-900 mb-6 relative z-10">Formulir Pendaftaran Calon Unit</h3>
+                        
+                        @if(session('success'))
+                            <div class="mb-6 p-4 rounded-lg bg-green-50 text-green-800 border border-green-200 text-sm font-medium">
+                                {{ session('success') }}
+                            </div>
+                        @endif
+
+                        <form action="{{ route('pendaftaran.unit') }}" method="POST" class="relative z-10">
+                            @csrf
+                            <div class="space-y-5">
+                                <div>
+                                    <label class="block text-sm font-bold text-gray-700 mb-1">Nama Lengkap</label>
+                                    <input type="text" name="nama_lengkap" required class="w-full rounded-xl border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 transition-colors" placeholder="Masukkan nama lengkap">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold text-gray-700 mb-1">No. WA Aktif</label>
+                                    <input type="text" name="no_wa" required class="w-full rounded-xl border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 transition-colors" placeholder="Contoh: 08123456789">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold text-gray-700 mb-1">Alamat Lengkap</label>
+                                    <textarea name="alamat_lengkap" rows="3" required class="w-full rounded-xl border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 transition-colors" placeholder="Masukkan alamat lengkap wilayah Anda"></textarea>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold text-gray-700 mb-1">Jadwal Edukasi</label>
+                                    <input type="date" name="jadwal_edukasi" required class="w-full rounded-xl border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 transition-colors">
+                                    <p class="text-xs text-gray-500 mt-1">Pilih tanggal untuk kami melakukan sosialisasi di tempat Anda.</p>
+                                </div>
+                                <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-bold text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors">
+                                    Kirim Pendaftaran
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <section id="kontak" class="py-16 bg-green-50/50 border-t border-green-100">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-12">

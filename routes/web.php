@@ -22,6 +22,7 @@ Route::get('/tentang-kami', [PublicController::class, 'tentangKami'])->name('ten
 Route::get('/program', [PublicController::class, 'program'])->name('program');
 Route::get('/berita', [PublicController::class, 'berita'])->name('berita');
 Route::get('/galeri', [PublicController::class, 'dokumentasi'])->name('dokumentasi.public');
+Route::post('/pendaftaran-unit', [PublicController::class, 'storeCalonUnit'])->name('pendaftaran.unit');
 
 Route::get('/dashboard', function () {
     $url = match (Auth::user()->role) {
@@ -58,6 +59,9 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/dashboard', [DashboardController::class, 'admin'])->name('admin.dashboard');
 
     Route::resource('units', UnitController::class);
+    Route::get('/calon-unit', [\App\Http\Controllers\CalonUnitController::class, 'index'])->name('calon-unit.index');
+    Route::put('/calon-unit/{id}/status', [\App\Http\Controllers\CalonUnitController::class, 'updateStatus'])->name('calon-unit.update-status');
+    Route::delete('/calon-unit/{id}', [\App\Http\Controllers\CalonUnitController::class, 'destroy'])->name('calon-unit.destroy');
 
     Route::resource('jenis-sampah', JenisSampahController::class);
     Route::resource('dokumentasi', \App\Http\Controllers\DokumentasiController::class);
@@ -103,6 +107,7 @@ Route::middleware(['auth', 'role:pengelola'])->group(function () {
 Route::middleware(['auth', 'role:admin,pengelola'])->group(function () {
     Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
     Route::get('/laporan/pdf', [LaporanController::class, 'exportPdf'])->name('laporan.pdf');
+    Route::get('/laporan-validasi', [\App\Http\Controllers\LaporanValidasiController::class, 'index'])->name('laporan.validasi');
     Route::get('/validasi', [ValidasiController::class, 'index'])->name('validasi.index');
     Route::get('/validasi/{id}', [ValidasiController::class, 'show'])->name('validasi.show');
 });

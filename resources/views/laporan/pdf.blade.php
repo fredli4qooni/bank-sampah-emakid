@@ -105,14 +105,12 @@
 
     <table>
         <thead>
-            <tr>
                 <th width="5%" class="text-center">No</th>
                 <th width="12%">Waktu & TRX</th>
-                <th width="22%">Nama Nasabah & Rekening</th>
-                <th width="18%">Unit / Kelompok</th>
-                <th width="12%">Petugas</th>
+                <th width="27%">Nama Nasabah & Rekening</th>
+                <th width="23%">Unit / Kelompok</th>
+                <th width="15%">Petugas</th>
                 <th width="8%" class="text-center">Status</th>
-                <th width="13%">Keterangan</th>
                 <th width="10%" class="text-right">Nilai Nominal</th>
             </tr>
         </thead>
@@ -138,31 +136,23 @@
                 <td class="text-center">
                     <strong>{{ strtoupper($trx->status_validasi) }}</strong>
                 </td>
-                <td>
-                    @if($trx->catatan_validasi)
-                    <span class="{{ str_contains($trx->catatan_validasi, '>10kg') ? 'catatan-merah' : 'catatan-abu' }}">
-                        {{ $trx->catatan_validasi }}
-                    </span>
-                    @else
-                    -
-                    @endif
-                </td>
                 <td class="text-right">
                     Rp {{ number_format($trx->total_nilai, 0, ',', '.') }}<br>
                     <span class="catatan-abu">Berat: {{ $trx->detail->sum('berat') }} kg</span>
                 </td>
             </tr>
             @empty
-            <tr>
-                <td colspan="8" class="text-center">Tidak ada data transaksi pada kriteria ini.</td>
-            </tr>
-            @endforelse
-
-            <tr class="total-row">
-                <td colspan="7" class="text-right">TOTAL NILAI KESELURUHAN:</td>
-                <td class="text-right total-amount">{{ number_format($grandTotal, 0, ',', '.') }}</td>
-            </tr>
-        </tbody>
+                <tr>
+                    <td colspan="6" class="text-center">Belum ada transaksi pada kriteria ini.</td>
+                </tr>
+                @endforelse
+            </tbody>
+            <tfoot>
+                <tr class="total-row">
+                    <td colspan="5" class="text-right">TOTAL KESELURUHAN:</td>
+                    <td class="text-right total-amount">{{ number_format($grandTotal, 0, ',', '.') }}</td>
+                </tr>
+            </tfoot>
     </table>
 
     <div style="margin-top: 30px; text-align: right; font-size: 11px;">
