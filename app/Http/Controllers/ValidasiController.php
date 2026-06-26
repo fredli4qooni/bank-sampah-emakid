@@ -7,6 +7,7 @@ use App\Models\LogKoreksi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class ValidasiController extends Controller
 {
@@ -29,11 +30,10 @@ class ValidasiController extends Controller
             'total_nilai' => $semuaTransaksi->sum('total_nilai'),
         ];
 
-        // Menu Riwayat (Semua Transaksi)
-        $riwayatTransactions = $semuaTransaksi;
+        $riwayatValidasi = $this->getRiwayatValidasiMap($semuaTransaksi);
 
-        // Tab 3: Group by Penimbang untuk Mode Bulk
-        $tabPenimbang = $semuaTransaksi->groupBy(function ($item) {
+        // Tab 3: Group by Penimbang untuk Mode Bulk (Pending Only)
+        $tabPenimbang = $semuaTransaksi->where('status_validasi', 'pending')->groupBy(function ($item) {
             return $item->id_user . '|' . \Carbon\Carbon::parse($item->created_at)->format('Y-m-d');
         })->map(function ($group, $key) {
             $parts = explode('|', $key);
@@ -44,7 +44,70 @@ class ValidasiController extends Controller
             ]);
         });
 
-        return view('validasi.index', compact('riwayatTransactions', 'tabPenimbang', 'summary', 'startDate', 'endDate'));
+        return view('validasi.index', compact('riwayatValidasi', 'tabPenimbang', 'summary', 'startDate', 'endDate'));
+    }
+
+    public function exportPdf(Request $request)
+    {
+        $startDate = $request->input('start_date', now()->subDays(30)->format('Y-m-d'));
+        $endDate = $request->input('end_date', now()->format('Y-m-d'));
+
+        $semuaTransaksi = Transaksi::with(['penimbang', 'detail'])
+            ->whereBetween(DB::raw('DATE(created_at)'), [$startDate, $endDate])
+            ->get();
+
+        $riwayatValidasi = $this->getRiwayatValidasiMap($semuaTransaksi);
+
+        $pdf = Pdf::loadView('validasi.pdf', compact('riwayatValidasi', 'startDate', 'endDate'));
+        $pdf->setPaper('A4', 'portrait');
+
+        return $pdf->download('Laporan_Grup_Validasi_'.$startDate.'_sd_'.$endDate.'.pdf');
+    }
+
+    private function getRiwayatValidasiMap($semuaTransaksi)
+    {
+        $transaksiSelesai = $semuaTransaksi->where('status_validasi', '!=', 'pending');
+        
+        return $transaksiSelesai->groupBy(function($t) {
+            return $t->id_user . '|' . $t->updated_at->format('Y-m-d H:i') . '|' . $t->catatan_validasi;
+        })->map(function($group) {
+            $first = $group->first();
+            $catatanValidasi = $first->catatan_validasi ?? '';
+            
+            $lapangan = 0;
+            $gudang = 0;
+            $keterangan = $catatanValidasi;
+            
+            if (preg_match('/Lap:\s*([0-9.]+)kg,\s*Gud:\s*([0-9.]+)kg/i', $catatanValidasi, $m)) {
+                $lapangan = (float)$m[1];
+                $gudang = (float)$m[2];
+                if (preg_match('/Ket:\s*(.*)$/i', $catatanValidasi, $k)) {
+                    $keterangan = trim($k[1]);
+                } else {
+                    $keterangan = '-';
+                }
+            } else {
+                $lapangan = $group->sum(function($t) { return $t->detail->sum('berat'); });
+                $gudang = $lapangan;
+                if (preg_match('/-\s*(.*)$/', $catatanValidasi, $k)) {
+                    $keterangan = trim($k[1]);
+                } elseif (str_starts_with($catatanValidasi, 'Koreksi Admin')) {
+                    $keterangan = $catatanValidasi;
+                }
+            }
+            
+            return [
+                'nama_penimbang' => $first->penimbang->name,
+                'tanggal' => $first->updated_at->format('d/m/Y H:i'),
+                'total_berat_lapangan' => $lapangan,
+                'total_berat_gudang' => $gudang,
+                'selisih' => abs($lapangan - $gudang),
+                'status' => $first->status_validasi,
+                'keterangan' => $keterangan,
+                'transaksi_count' => $group->count(),
+                'total_nilai' => $group->sum('total_nilai'),
+            ];
+        })->values();
     }
 
     private function formatGrupData(\Illuminate\Support\Collection $group, array $extraData = [])

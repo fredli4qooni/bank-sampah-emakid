@@ -107,8 +107,9 @@ Route::middleware(['auth', 'role:pengelola'])->group(function () {
 Route::middleware(['auth', 'role:admin,pengelola'])->group(function () {
     Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
     Route::get('/laporan/pdf', [LaporanController::class, 'exportPdf'])->name('laporan.pdf');
-    Route::get('/laporan-validasi', [\App\Http\Controllers\LaporanValidasiController::class, 'index'])->name('laporan.validasi');
+
     Route::get('/validasi', [ValidasiController::class, 'index'])->name('validasi.index');
+    Route::get('/validasi/pdf', [ValidasiController::class, 'exportPdf'])->name('validasi.pdf');
     Route::get('/validasi/{id}', [ValidasiController::class, 'show'])->name('validasi.show');
 });
 

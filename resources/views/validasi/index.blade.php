@@ -177,45 +177,50 @@
 
             <!-- Riwayat Validasi Section -->
             <div class="mt-8 bg-white overflow-hidden shadow-sm sm:rounded-xl border border-gray-100">
-                <div class="p-5 bg-gray-50 border-b border-gray-200">
-                    <h3 class="font-bold text-gray-800 text-sm">Riwayat Validasi</h3>
-                    <p class="text-xs text-gray-500 mt-1">Daftar transaksi yang sudah divalidasi atau dikoreksi pada rentang tanggal filter di atas.</p>
+                <div class="p-5 bg-gray-50 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div>
+                        <h3 class="font-bold text-gray-800 text-sm">Riwayat Validasi (Grup Harian)</h3>
+                        <p class="text-xs text-gray-500 mt-1">Daftar rekapan setoran yang sudah divalidasi atau dikoreksi pada rentang tanggal filter di atas.</p>
+                    </div>
+                    <a href="{{ route('validasi.pdf', ['start_date' => request('start_date', $startDate), 'end_date' => request('end_date', $endDate)]) }}" target="_blank" class="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg shadow-sm text-sm transition-colors w-full sm:w-auto text-center justify-center">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+                        Download Laporan
+                    </a>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-sm text-left text-gray-600">
                         <thead class="text-xs text-gray-700 uppercase bg-gray-100 border-b border-gray-200">
                             <tr>
-                                <th class="px-6 py-4 font-bold">Waktu</th>
-                                <th class="px-6 py-4 font-bold">Penimbang</th>
-                                <th class="px-6 py-4 font-bold">Nasabah</th>
-                                <th class="px-6 py-4 font-bold">Total Berat</th>
-                                <th class="px-6 py-4 font-bold">Total Nilai</th>
+                                <th class="px-6 py-4 font-bold">Nama Penimbang</th>
+                                <th class="px-6 py-4 font-bold">Tanggal</th>
+                                <th class="px-6 py-4 font-bold">Total Lapangan</th>
+                                <th class="px-6 py-4 font-bold">Total Gudang</th>
+                                <th class="px-6 py-4 font-bold">Selisih</th>
                                 <th class="px-6 py-4 font-bold text-center">Status</th>
+                                <th class="px-6 py-4 font-bold">Keterangan</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-100">
-                            @php 
-                                $riwayatValid = $riwayatTransactions->filter(function($t) { 
-                                    return $t->status_validasi !== 'pending'; 
-                                });
-                            @endphp
-                            @forelse($riwayatValid as $trx)
+                            @forelse ($riwayatValidasi as $row)
                             <tr class="hover:bg-gray-50 transition-colors">
-                                <td class="px-6 py-4 font-medium">{{ $trx->created_at->format('d M Y H:i') }}</td>
-                                <td class="px-6 py-4 text-gray-800 font-bold">{{ $trx->penimbang->name }}</td>
-                                <td class="px-6 py-4 font-bold text-gray-800">{{ $trx->nasabah->nama }} <br><span class="text-xs text-gray-400 font-normal">{{ $trx->nasabah->no_rekening }}</span></td>
-                                <td class="px-6 py-4 font-bold">{{ number_format($trx->detail->sum('berat'), 2, ',', '.') }} kg</td>
-                                <td class="px-6 py-4 font-black text-green-700">Rp {{ number_format($trx->total_nilai, 0, ',', '.') }}</td>
+                                <td class="px-6 py-4 font-black text-gray-800">{{ $row['nama_penimbang'] }}</td>
+                                <td class="px-6 py-4 font-medium">{{ $row['tanggal'] }}</td>
+                                <td class="px-6 py-4 font-bold text-gray-700">{{ number_format($row['total_berat_lapangan'], 2, ',', '.') }} kg</td>
+                                <td class="px-6 py-4 font-bold text-gray-700">{{ number_format($row['total_berat_gudang'], 2, ',', '.') }} kg</td>
+                                <td class="px-6 py-4 font-bold {{ $row['selisih'] > 0 ? 'text-red-600' : 'text-green-600' }}">
+                                    {{ number_format($row['selisih'], 2, ',', '.') }} kg
+                                </td>
                                 <td class="px-6 py-4 text-center">
-                                    @if($trx->status_validasi == 'valid')
-                                        <span class="bg-green-100 text-green-700 text-xs px-2.5 py-1 rounded-full font-bold">Valid</span>
-                                    @elseif($trx->status_validasi == 'terkoreksi')
-                                        <span class="bg-blue-100 text-blue-700 text-xs px-2.5 py-1 rounded-full font-bold">Terkoreksi</span>
-                                    @endif
+                                    <span class="text-[10px] px-2.5 py-1 rounded-full font-bold uppercase border {{ $row['status'] == 'valid' ? 'bg-green-100 text-green-800 border-green-200' : 'bg-yellow-100 text-yellow-800 border-yellow-200' }}">
+                                        {{ $row['status'] }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="text-xs italic text-gray-500">{{ $row['keterangan'] }}</span>
                                 </td>
                             </tr>
                             @empty
-                            <tr><td colspan="6" class="text-center py-8 text-gray-400 italic">Belum ada riwayat validasi pada rentang tanggal ini.</td></tr>
+                            <tr><td colspan="7" class="text-center py-8 text-gray-400 italic">Belum ada riwayat grup validasi.</td></tr>
                             @endforelse
                         </tbody>
                     </table>
