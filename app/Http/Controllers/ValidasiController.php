@@ -32,9 +32,11 @@ class ValidasiController extends Controller
 
         $riwayatValidasi = $this->getRiwayatValidasiMap($semuaTransaksi);
 
-        // Tab 3: Group by Penimbang untuk Mode Bulk (Pending Only)
-        $tabPenimbang = $semuaTransaksi->where('status_validasi', 'pending')->groupBy(function ($item) {
+        // Tab 3: Group by Penimbang untuk Mode Bulk (Show all transactions of that date if there's at least one pending)
+        $tabPenimbang = $semuaTransaksi->groupBy(function ($item) {
             return $item->id_user . '|' . \Carbon\Carbon::parse($item->created_at)->format('Y-m-d');
+        })->filter(function ($group) {
+            return $group->where('status_validasi', 'pending')->count() > 0;
         })->map(function ($group, $key) {
             $parts = explode('|', $key);
             return $this->formatGrupData($group, [
@@ -129,7 +131,8 @@ class ValidasiController extends Controller
             'total_nilai' => $group->sum('total_nilai'),
             'transaksi' => $group,
             'status_agregat' => $statusAgregat,
-            'id_transaksi_pending' => $pendingGroup->pluck('id_transaksi')->implode(',')
+            'id_transaksi_pending' => $pendingGroup->pluck('id_transaksi')->implode(','),
+            'id_transaksi_all' => $group->pluck('id_transaksi')->implode(',')
         ];
 
         return array_merge($extraData, $data);
@@ -138,18 +141,21 @@ class ValidasiController extends Controller
     public function bulkProcess(Request $request)
     {
         $request->validate([
-            'ids' => 'required|string',
+            'ids_pending' => 'required|string',
+            'ids_all' => 'required|string',
             'total_berat_lapangan' => 'required|numeric|min:0',
             'berat_gudang' => 'required|numeric|min:0|max:' . $request->total_berat_lapangan,
         ]);
 
-        $ids = explode(',', $request->ids);
-        $transaksis = Transaksi::with('nasabah')
-            ->whereIn('id_transaksi', $ids)
+        $idsPending = explode(',', $request->ids_pending);
+        $idsAll = explode(',', $request->ids_all);
+
+        $transaksisPending = Transaksi::with('nasabah')
+            ->whereIn('id_transaksi', $idsPending)
             ->where('status_validasi', 'pending')
             ->get();
 
-        if ($transaksis->isEmpty()) {
+        if ($transaksisPending->isEmpty()) {
             return back()->with('error', 'Tidak ada transaksi pending untuk divalidasi.');
         }
 
@@ -174,15 +180,20 @@ class ValidasiController extends Controller
 
         DB::beginTransaction();
         try {
-            foreach ($transaksis as $trx) {
+            foreach ($transaksisPending as $trx) {
                 $trx->update([
                     'status_validasi' => $newStatus,
-                    'catatan_validasi' => $catatan
                 ]);
                 $trx->nasabah->increment('saldo', $trx->total_nilai);
             }
+            
+            Transaksi::whereIn('id_transaksi', $idsAll)->update([
+                'catatan_validasi' => $catatan,
+                'updated_at' => now(),
+            ]);
+            
             DB::commit();
-            return back()->with('success', count($transaksis) . ' transaksi berhasil divalidasi. Status: ' . $newStatus . '. ' . $catatan);
+            return back()->with('success', count($transaksisPending) . ' transaksi divalidasi. Status: ' . $newStatus . '. ' . $catatan);
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());

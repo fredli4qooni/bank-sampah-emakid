@@ -63,6 +63,7 @@
                 </div>
             </div>
 
+            @if(Auth::user()->role === 'admin')
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-xl border border-gray-100">
                 <div class="p-5 bg-blue-50 border-b border-blue-100">
                     <h3 class="font-bold text-blue-800 text-sm">Validasi Setoran</h3>
@@ -85,7 +86,7 @@
                         @foreach ($tabPenimbang as $row)
                         @if($row['id_transaksi_pending'] != '')
                         @php $hasPendingGroup = true; @endphp
-                        <tbody x-data="{ expanded: false, beratGudang: '', beratLapangan: {{ $row['total_berat_pending'] }} }" class="border-b border-gray-100">
+                        <tbody x-data="{ expanded: false, beratGudang: '', beratLapangan: {{ $row['total_berat'] }} }" class="border-b border-gray-100">
                             <tr class="bg-white hover:bg-gray-50 transition-colors group cursor-pointer">
                                 <td @click="expanded = !expanded" class="px-6 py-4 font-black text-gray-900 flex items-center gap-2">
                                     <svg class="w-4 h-4 text-gray-400 transform transition-transform" :class="{'rotate-90 text-blue-600': expanded}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
@@ -93,39 +94,32 @@
                                 </td>
                                 <td @click="expanded = !expanded" class="px-6 py-4 font-medium">{{ \Carbon\Carbon::parse($row['tanggal'])->format('d M Y') }}</td>
                                 <td @click="expanded = !expanded" class="px-6 py-4 font-bold">
-                                    {{ number_format($row['total_berat_pending'], 2, ',', '.') }} kg
+                                    {{ number_format($row['total_berat'], 2, ',', '.') }} kg
                                 </td>
                                 <td class="px-6 py-4 text-center align-top">
-                                    @if(Auth::user()->role === 'admin')
                                     <form id="formBulk{{ $loop->index }}" action="{{ route('validasi.bulk') }}" method="POST" class="flex flex-col gap-2">
                                         @csrf
-                                        <input type="hidden" name="ids" value="{{ $row['id_transaksi_pending'] }}">
-                                        <input type="hidden" name="total_berat_lapangan" value="{{ $row['total_berat_pending'] }}">
+                                        <input type="hidden" name="ids_pending" value="{{ $row['id_transaksi_pending'] }}">
+                                        <input type="hidden" name="ids_all" value="{{ $row['id_transaksi_all'] }}">
+                                        <input type="hidden" name="total_berat_lapangan" value="{{ $row['total_berat'] }}">
                                         <div>
-                                            <input type="number" name="berat_gudang" step="0.01" min="0" max="{{ $row['total_berat_pending'] }}" placeholder="Berat Gudang" x-model="beratGudang" onkeydown="if(event.key === '.') { this.nextElementSibling.classList.remove('hidden'); setTimeout(() => this.nextElementSibling.classList.add('hidden'), 3000); event.preventDefault(); }" title="Timbangan Gudang u/ {{ number_format($row['total_berat_pending'], 2) }}kg Lapangan" class="text-xs border-gray-300 focus:border-green-500 focus:ring focus:ring-green-200 rounded shadow-sm px-2 py-1.5 w-full text-center font-bold text-blue-800" required>
+                                            <input type="number" name="berat_gudang" step="0.01" min="0" max="{{ $row['total_berat'] }}" placeholder="Berat Gudang" x-model="beratGudang" onkeydown="if(event.key === '.') { this.nextElementSibling.classList.remove('hidden'); setTimeout(() => this.nextElementSibling.classList.add('hidden'), 3000); event.preventDefault(); }" title="Timbangan Gudang u/ {{ number_format($row['total_berat'], 2) }}kg Lapangan" class="text-xs border-gray-300 focus:border-green-500 focus:ring focus:ring-green-200 rounded shadow-sm px-2 py-1.5 w-full text-center font-bold text-blue-800" required>
                                             <p class="text-red-500 text-[10px] hidden mt-1 font-bold text-center">Gunakan koma (,) bukan titik</p>
                                         </div>
                                         <input type="text" name="keterangan" placeholder="Keterangan opsional" x-show="beratGudang !== '' && Math.abs(beratLapangan - parseFloat(beratGudang || 0)) > 0" x-cloak class="text-[10px] border-gray-300 focus:border-green-500 focus:ring focus:ring-green-200 rounded shadow-sm px-2 py-1 w-full text-center text-gray-700">
                                     </form>
-                                    @else
-                                    <span class="text-xs text-gray-400 italic">Hanya Admin</span>
-                                    @endif
                                 </td>
                                 <td class="px-6 py-4 text-center font-bold">
                                     <span x-show="beratGudang === ''" class="text-gray-400 italic text-xs">-</span>
-                                    <span x-show="beratGudang !== ''" x-cloak class="text-blue-600" x-text="(Math.abs(beratLapangan - parseFloat(beratGudang || 0))).toFixed(2) + ' kg'"></span>
+                                    <span x-show="beratGudang !== ''" :class="{'text-red-600': Math.abs(beratLapangan - parseFloat(beratGudang || 0)) > 10, 'text-yellow-600': Math.abs(beratLapangan - parseFloat(beratGudang || 0)) > 0 && Math.abs(beratLapangan - parseFloat(beratGudang || 0)) <= 10, 'text-green-600': Math.abs(beratLapangan - parseFloat(beratGudang || 0)) === 0}" x-text="Math.abs(beratLapangan - parseFloat(beratGudang || 0)).toFixed(2) + ' kg'"></span>
                                 </td>
                                 <td class="px-6 py-4 text-center">
-                                    @if(Auth::user()->role === 'admin')
-                                    <button form="formBulk{{ $loop->index }}" type="submit" x-show="beratGudang !== '' && parseFloat(beratGudang) <= beratLapangan" class="text-[11px] bg-green-600 hover:bg-green-700 text-white font-bold py-1.5 px-3 rounded shadow-sm w-full" onclick="return confirm('Data selisih sesuai? Saldo nasabah akan ditambahkan. Lanjutkan?')">Validasi Grup</button>
-                                    <span x-show="beratGudang !== '' && parseFloat(beratGudang) > beratLapangan" x-cloak class="text-[10px] text-red-600 font-bold">Error!<br>Berat gudang > Lapangan</span>
-                                    <span x-show="beratGudang !== '' && parseFloat(beratGudang) <= beratLapangan && Math.abs(beratLapangan - parseFloat(beratGudang || 0)) > 10" x-cloak class="text-[10px] text-red-600 font-bold mt-1 block">Selisih Ekstrim!<br>Buka rincian & rombak data</span>
-                                    @else
-                                    <span class="bg-yellow-100 text-yellow-700 text-[10px] px-2.5 py-1 rounded-full font-bold animate-pulse">Pending</span>
-                                    @endif
+                                    <button type="button" onclick="document.getElementById('formBulk{{ $loop->index }}').submit()" class="w-full text-[10px] bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-3 rounded shadow-sm uppercase tracking-wider transition-colors focus:ring focus:ring-blue-300">
+                                        Validasi Grup
+                                    </button>
                                 </td>
                             </tr>
-                            <tr x-show="expanded" x-cloak class="bg-gray-50">
+                            <tr x-show="expanded" x-cloak>
                                 <td colspan="6" class="p-0 border-t border-gray-100">
                                     <div class="px-10 py-4 bg-gray-50 border-l-4 border-blue-500 shadow-inner">
                                         <table class="w-full text-xs text-left text-gray-500">
@@ -135,32 +129,32 @@
                                                     <th class="py-2">Nasabah</th>
                                                     <th class="py-2 text-right">Nilai Lapangan</th>
                                                     <th class="py-2 text-center">Status</th>
-                                                    @if(Auth::user()->role === 'admin')
                                                     <th class="py-2 text-center">Aksi</th>
-                                                    @endif
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 @foreach($row['transaksi'] as $trx)
-                                                @if($trx->status_validasi == 'pending')
                                                 <tr class="border-b border-gray-100 last:border-0 hover:bg-gray-100 transition-colors">
                                                     <td class="py-2 font-medium">{{ $trx->created_at->format('H:i') }}</td>
                                                     <td class="py-2 font-bold text-gray-800">{{ $trx->nasabah->nama }}</td>
                                                     <td class="py-2 font-bold text-gray-700 text-right">Rp {{ number_format($trx->total_nilai, 0, ',', '.') }}</td>
                                                     <td class="py-2 text-center">
-                                                        <span class="text-yellow-600 font-bold">Pending</span>
+                                                        <span class="text-[10px] px-2 py-1 rounded font-bold uppercase {{ $trx->status_validasi == 'pending' ? 'bg-yellow-100 text-yellow-700' : 'bg-green-100 text-green-700' }}">
+                                                            {{ $trx->status_validasi }}
+                                                        </span>
                                                     </td>
-                                                    @if(Auth::user()->role === 'admin')
                                                     <td class="py-2 text-center">
+                                                        @if($trx->status_validasi == 'pending')
                                                         <a href="{{ route('validasi.koreksi', $trx->id_transaksi) }}" class="text-[10px] bg-yellow-100 hover:bg-yellow-500 text-yellow-700 hover:text-white font-bold py-1 px-2 rounded transition-colors shadow-sm inline-block">Rombak Data</a>
+                                                        @else
+                                                        <span class="text-[10px] text-gray-400 italic">Sudah divalidasi</span>
+                                                        @endif
                                                     </td>
-                                                    @endif
                                                 </tr>
-                                                @endif
                                                 @endforeach
                                             </tbody>
                                         </table>
-                                        <div class="mt-2 text-xs text-gray-400 italic">*Setoran di atas adalah rincian dari grup pending yang ada. Untuk cetak struk atau hapus, silakan gunakan "Menu Riwayat Transaksi".</div>
+                                        <div class="mt-2 text-xs text-gray-400 italic">*Setoran di atas adalah keseluruhan rincian transaksi harian. "Total Lapangan" dihitung dari keseluruhan transaksi ini.</div>
                                     </div>
                                 </td>
                             </tr>
@@ -174,6 +168,7 @@
                     </table>
                 </div>
             </div>
+            @endif
 
             <!-- Riwayat Validasi Section -->
             <div class="mt-8 bg-white overflow-hidden shadow-sm sm:rounded-xl border border-gray-100">
