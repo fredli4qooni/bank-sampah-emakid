@@ -1,7 +1,13 @@
 # syntax=docker/dockerfile:1.7
 
 # ---------- Stage 1: composer deps ----------
-FROM composer:2.8 AS vendor
+FROM php:8.4-cli-alpine AS vendor
+RUN apk add --no-cache \
+        $PHPIZE_DEPS \
+        libzip-dev \
+        oniguruma-dev \
+    && docker-php-ext-install bcmath gd intl opcache pcntl zip \
+    && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 WORKDIR /app
 COPY composer.json composer.lock ./
 RUN --mount=type=cache,target=/root/.composer/cache \
