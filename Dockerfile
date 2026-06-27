@@ -4,8 +4,14 @@
 FROM php:8.4-cli-alpine AS vendor
 RUN apk add --no-cache \
         $PHPIZE_DEPS \
+        freetype-dev \
+        icu-dev \
+        libjpeg-turbo-dev \
+        libpng-dev \
+        libwebp-dev \
         libzip-dev \
         oniguruma-dev \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
     && docker-php-ext-install bcmath gd intl opcache pcntl zip \
     && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 WORKDIR /app
@@ -30,8 +36,12 @@ FROM php:8.4-fpm-alpine AS runtime
 RUN apk add --no-cache \
         bash \
         curl \
+        freetype-dev \
         git \
         icu-dev \
+        libjpeg-turbo-dev \
+        libpng-dev \
+        libwebp-dev \
         libzip-dev \
         mysql-client \
         nginx \
@@ -39,7 +49,8 @@ RUN apk add --no-cache \
         shadow \
         supervisor \
         tzdata \
-    && docker-php-ext-install bcmath intl opcache pdo_mysql zip \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
+    && docker-php-ext-install bcmath gd intl opcache pdo_mysql zip \
     && apk add --no-cache --virtual .build-deps autoconf g++ make \
     && pecl install redis \
     && docker-php-ext-enable redis \
