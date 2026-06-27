@@ -152,11 +152,27 @@ class TransaksiController extends Controller
                 $totalNilaiBaru += $subtotal;
             }
 
-            $statusLama = $transaksi->status_validasi;
+            $date = \Carbon\Carbon::parse($transaksi->created_at)->format('Y-m-d');
+            $groupTransaksis = Transaksi::where('id_user', $transaksi->id_user)
+                ->whereDate('created_at', $date)
+                ->get();
+
+            foreach ($groupTransaksis as $trx) {
+                if (in_array($trx->status_validasi, ['valid', 'terkoreksi'])) {
+                    $nilaiToDeduct = ($trx->id_transaksi == $transaksi->id_transaksi) ? $totalNilaiLama : $trx->total_nilai;
+                    $trx->nasabah->decrement('saldo', $nilaiToDeduct);
+                }
+                
+                $trx->update([
+                    'status_validasi' => 'pending',
+                    'catatan_validasi' => ($trx->id_transaksi == $transaksi->id_transaksi) 
+                                          ? 'Data direvisi admin dari Riwayat'
+                                          : 'Dibatalkan otomatis untuk divalidasi ulang',
+                ]);
+            }
 
             $transaksi->update([
                 'total_nilai' => $totalNilaiBaru,
-                'status_validasi' => 'terkoreksi'
             ]);
 
             \App\Models\LogKoreksi::create([
@@ -164,16 +180,11 @@ class TransaksiController extends Controller
                 'id_admin' => Auth::id(),
                 'field_sebelum' => json_encode(['total_nilai' => $totalNilaiLama]),
                 'field_sesudah' => json_encode(['total_nilai' => $totalNilaiBaru]),
-                'catatan_alasan' => 'Dikoreksi melalui form edit transaksi',
+                'catatan_alasan' => 'Dikoreksi melalui form edit transaksi, grup divalidasi ulang',
             ]);
 
-            if (in_array($statusLama, ['valid', 'terkoreksi'])) {
-                $transaksi->nasabah->decrement('saldo', $totalNilaiLama);
-                $transaksi->nasabah->increment('saldo', $totalNilaiBaru);
-            }
-
             DB::commit();
-            return redirect()->route('transaksi.index')->with('success', 'Transaksi atas nama ' . $transaksi->nasabah->nama . ' berhasil dikoreksi.');
+            return redirect()->route('validasi.index')->with('success', 'Setoran ' . $transaksi->nasabah->nama . ' berhasil dikoreksi. Seluruh transaksi pada tanggal tersebut telah dikembalikan ke antrean untuk divalidasi ulang (Penyesuaian Berat Gudang).');
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Terjadi kesalahan sistem: ' . $e->getMessage());
