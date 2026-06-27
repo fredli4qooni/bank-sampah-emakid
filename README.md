@@ -1,58 +1,204 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Bank Sampah Emakid
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+> Platform digital untuk Bank Sampah — pencatatan nasabah, transaksi setor sampah, penarikan saldo, dokumentasi, dan chatbot panduan.
 
-## About Laravel
+Laravel 13 • PHP 8.4 • MySQL 8 • Docker • CI/CD via GitHub Actions • Cloudflare Tunnel.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## ✨ Fitur
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- Manajemen **Unit / Nasabah** dengan saldo realtime
+- **Setor & tarik saldo** dengan validasi admin
+- **Jenis sampah** + harga per kategori
+- **Laporan** PDF (DomPDF) & export Excel (Maatwebsite)
+- **FAQ + Chatbot** rules (rule-based, tanpa API key)
+- **Audit trail** koreksi transaksi
+- **Backup log** operasional
+- Multi-role auth (Breeze)
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## 🧱 Stack
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+| Layer    | Tech                                          |
+|----------|-----------------------------------------------|
+| Backend  | Laravel 13.8, PHP 8.4                         |
+| DB       | MySQL 8.4 (shared `infra-mysql` instance)     |
+| Frontend | Blade + Tailwind + Vite, Alpine               |
+| Auth     | Laravel Breeze                                |
+| Export   | barryvdh/laravel-dompdf, maatwebsite/excel    |
+| Runtime  | Docker (php-fpm + nginx + supervisor)         |
+| Deploy   | GHCR + GitHub Actions + Cloudflare Tunnel     |
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+---
 
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+## 🛠️ Local Development
 
 ```bash
-composer require laravel/boost --dev
+git clone https://github.com/fredli4qooni/bank-sampah-emakid.git
+cd bank-sampah-emakid
 
-php artisan boost:install
+cp .env.example .env
+composer install
+npm install
+touch database/database.sqlite
+
+php artisan key:generate
+php artisan migrate --seed
+npm run build    # atau: npm run dev
+
+php artisan serve    # http://127.0.0.1:8000
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+Atau full dev (server + queue + logs + vite):
 
-## Contributing
+```bash
+composer run dev
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+---
 
-## Code of Conduct
+## 🐳 Production (Docker)
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### Arsitektur
 
-## Security Vulnerabilities
+```
+Cloudflare Edge ──► cloudflared (sidecar)
+                          │
+                          ▼
+                     nginx :80 ──► php-fpm (Laravel)
+                                       │
+                                       ▼
+                              infra-mysql (shared network: db-shared)
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+- Image dipush ke **GHCR**: `ghcr.io/fredli4qooni/bank-sampah-emakid`
+- Setiap push ke `main` / tag → build → push → deploy via SSH
+- Network `db-shared` (external) dipakai bersama infra-mysql
+- `cloudflared` tunnel sidecar, tanpa expose port publik
 
-## License
+### Server layout
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```
+~/sewa/bank-sampah-emakid/
+├── docker-compose.prod.yml
+├── .env                       # production secrets
+└── (no source — pulled dari GHCR)
+```
+
+DB di server (sudah dibuat):
+
+- **Database**: `bank_sampah_emakid`
+- **User**: `bse_user`
+- **Host**: `infra-mysql` (container name, di network `db-shared`)
+
+### Setup server (sekali)
+
+1. Buat folder:
+   ```bash
+   mkdir -p ~/sewa/bank-sampah-emakid && cd ~/sewa/bank-sampah-emakid
+   ```
+
+2. Copy `.env.production.example` → `.env` di server, lalu edit:
+   ```bash
+   # Generate APP_KEY lokal lalu paste:
+   php artisan key:generate --show
+   ```
+   Isi `APP_KEY`, `CLOUDFLARE_TUNNEL_TOKEN`.
+
+3. Copy `docker-compose.prod.yml` ke server (atau biarkan CI yang menarik dari repo).
+
+4. Tarik & jalankan pertama kali manual:
+   ```bash
+   docker compose -f docker-compose.prod.yml pull app
+   docker compose -f docker-compose.prod.yml up -d app cloudflared
+   docker logs -f bank-sampah-emakid-app
+   ```
+
+---
+
+## 🔁 CI/CD (GitHub Actions)
+
+Workflow: `.github/workflows/deploy.yml`
+
+**Trigger**:
+- push ke `main`
+- push tag `v*.*.*`
+- manual `workflow_dispatch`
+
+**Pipeline**:
+1. Build multi-stage Docker image (composer + node + php-fpm)
+2. Push ke GHCR (`ghcr.io/<owner>/bank-sampah-emakid:<tag>`)
+3. SSH ke server → pull → up → prune
+
+### GitHub Secrets yang dibutuhkan
+
+| Secret                      | Value                              |
+|-----------------------------|------------------------------------|
+| `SSH_HOST`                  | IP/hostname server                 |
+| `SSH_USER`                  | `ubuntu`                           |
+| `SSH_PASSWORD`              | server password                    |
+| `SSH_PORT`                  | `22` (optional)                    |
+| `CLOUDFLARE_TUNNEL_TOKEN`   | token dari dashboard Cloudflare    |
+
+> ⚠️ Pakai SSH key lebih aman dari password. Ganti `appleboy/ssh-action` ke mode `key` + secret `SSH_KEY` bila sudah siap.
+
+---
+
+## 🌐 Cloudflare Tunnel
+
+1. Cloudflare Zero Trust → **Networks → Tunnels** → Create
+2. Type: `Cloudflared`
+3. Public hostname: mis. `banksampahemakid.my.id` → `http://bank-sampah-emakid-app:80`
+4. Copy token → paste ke `.env` server sebagai `CLOUDFLARE_TUNNEL_TOKEN`
+
+Container `cloudflared` akan auto-connect; container `app` listen di port 80 internal (tidak dipublish ke host).
+
+---
+
+## 📦 Build lokal image (opsional)
+
+```bash
+docker build -t bank-sampah-emakid:dev .
+docker run --rm -p 8080:80 --env-file .env bank-sampah-emakid:dev
+```
+
+---
+
+## 📂 Struktur
+
+```
+.
+├── app/
+│   ├── Http/
+│   ├── Models/
+│   └── services/          # ChatbotService, dll
+├── database/migrations/
+├── docker/
+│   ├── entrypoint.sh
+│   ├── nginx.conf
+│   ├── php.ini
+│   └── supervisord.conf
+├── docker-compose.prod.yml
+├── Dockerfile
+└── .github/workflows/deploy.yml
+```
+
+---
+
+## 🔐 Environment penting
+
+| Variable                     | Keterangan                                 |
+|------------------------------|--------------------------------------------|
+| `APP_KEY`                    | Wajib di-set                               |
+| `APP_URL`                    | URL publik (untuk asset, link email)       |
+| `DB_*`                       | MySQL di network `db-shared`               |
+| `SESSION/CACHE/QUEUE_DRIVER` | Disarankan `database`                      |
+| `CLOUDFLARE_TUNNEL_TOKEN`    | Token dari dashboard tunnel                |
+
+---
+
+## 📜 Lisensi
+
+MIT © Bank Sampah Emakid

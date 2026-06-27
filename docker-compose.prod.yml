@@ -1,0 +1,39 @@
+services:
+  app:
+    image: ghcr.io/${GHCR_OWNER:-fredli4qooni}/bank-sampah-emakid:${IMAGE_TAG:-latest}
+    container_name: bank-sampah-emakid-app
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - storage_data:/var/www/storage
+    networks:
+      - db-shared
+      - tunnel-net
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1/ >/dev/null 2>&1 || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: bank-sampah-emakid-cloudflared
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run
+    environment:
+      - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN}
+    depends_on:
+      - app
+    networks:
+      - tunnel-net
+
+networks:
+  db-shared:
+    external: true
+  tunnel-net:
+    driver: bridge
+
+volumes:
+  storage_data:
+    name: bank-sampah-emakid-storage
