@@ -68,8 +68,6 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
     Route::post('validasi/bulk', [App\Http\Controllers\ValidasiController::class, 'bulkProcess'])->name('validasi.bulk');
     Route::post('/validasi/{id}/process', [ValidasiController::class, 'process'])->name('validasi.process');
-    Route::get('/validasi', [ValidasiController::class, 'index'])->name('validasi.index');
-    Route::get('/validasi/{id}', [ValidasiController::class, 'show'])->name('validasi.show');
     Route::get('/validasi/{id}/koreksi', [\App\Http\Controllers\ValidasiController::class, 'koreksi'])->name('validasi.koreksi');
     Route::put('/validasi/{id}/koreksi', [\App\Http\Controllers\ValidasiController::class, 'updateKoreksi'])->name('validasi.update_koreksi');
     Route::delete('/validasi/{id}', [\App\Http\Controllers\ValidasiController::class, 'destroy'])->name('validasi.destroy');

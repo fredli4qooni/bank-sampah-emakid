@@ -267,17 +267,15 @@ class ValidasiController extends Controller
                 }
             }
 
-            $newStatus = $isChanged ? 'terkoreksi' : 'valid';
             $catatanSuffix = $request->catatan_koreksi ? ' - ' . $request->catatan_koreksi : '';
-            $catatanAdmin = $isChanged ? 'Koreksi Admin' . $catatanSuffix : 'Divalidasi tanpa perubahan data' . $catatanSuffix;
+            $catatanAdmin = $isChanged ? 'Data dirombak admin' . $catatanSuffix : $transaksi->catatan_validasi;
 
             $transaksi->update([
                 'total_nilai' => $totalNilaiBaru,
-                'status_validasi' => $newStatus,
                 'catatan_validasi' => $catatanAdmin,
             ]);
 
-            $transaksi->nasabah->increment('saldo', $totalNilaiBaru);
+            // Saldo tidak ditambah di sini karena status masih pending dan menunggu Validasi Grup
 
             $dataSesudah = [
                 'total_nilai' => $totalNilaiBaru,
@@ -293,7 +291,7 @@ class ValidasiController extends Controller
             ]);
 
             DB::commit();
-            return redirect()->route('validasi.index')->with('success', 'Transaksi berhasil dikoreksi secara total dan saldo nasabah telah disesuaikan.');
+            return redirect()->route('validasi.index')->with('success', 'Rincian setoran berhasil dirombak. Data dikembalikan ke antrean untuk penyesuaian Berat Gudang (Validasi Grup).');
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Gagal memproses koreksi: ' . $e->getMessage());
