@@ -18,7 +18,15 @@ echo "[entrypoint] Running migrations..."
 php artisan migrate --force --no-interaction
 
 echo "[entrypoint] Storage link..."
-php artisan storage:link || true
+rm -f /var/www/public/storage
+php artisan storage:link --force 2>&1 || {
+    echo "[entrypoint] WARNING: storage:link failed, creating symlink manually..."
+    ln -sf ../storage/app/public /var/www/public/storage
+}
+
+echo "[entrypoint] Fixing storage permissions..."
+chown -R www-data:www-data /var/www/storage/app/public 2>/dev/null || true
+chmod -R 775 /var/www/storage/app/public 2>/dev/null || true
 
 echo "[entrypoint] Optimizing..."
 php artisan optimize || true

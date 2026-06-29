@@ -13,35 +13,43 @@ class DokumentasiController extends Controller
     {
         $extension = strtolower($file->getClientOriginalExtension());
         $filename = uniqid() . '-' . time() . '.webp';
-        $path = storage_path('app/public/' . $folder);
-        
-        if (!file_exists($path)) {
-            mkdir($path, 0755, true);
-        }
-        
-        $fullPath = $path . '/' . $filename;
-        
-        $image = null;
-        if (in_array($extension, ['jpg', 'jpeg'])) {
-            $image = @imagecreatefromjpeg($file->getPathname());
-        } elseif ($extension == 'png') {
-            $image = @imagecreatefrompng($file->getPathname());
-            if ($image) {
-                imagepalettetotruecolor($image);
-                imagealphablending($image, true);
-                imagesavealpha($image, true);
-            }
-        } elseif ($extension == 'webp') {
+
+        if ($extension === 'webp') {
             return $file->storeAs($folder, $filename, 'public');
         }
 
-        if ($image) {
-            imagewebp($image, $fullPath, 80);
-            imagedestroy($image);
-            return $folder . '/' . $filename;
+        try {
+            $image = null;
+            if (in_array($extension, ['jpg', 'jpeg'])) {
+                $image = @imagecreatefromjpeg($file->getPathname());
+            } elseif ($extension === 'png') {
+                $image = @imagecreatefrompng($file->getPathname());
+                if ($image) {
+                    imagepalettetotruecolor($image);
+                    imagealphablending($image, true);
+                    imagesavealpha($image, true);
+                }
+            }
+
+            if ($image) {
+                $path = storage_path('app/public/' . $folder);
+                if (!file_exists($path)) {
+                    mkdir($path, 0775, true);
+                }
+                $fullPath = $path . '/' . $filename;
+                $result = @imagewebp($image, $fullPath, 80);
+                imagedestroy($image);
+                if ($result) {
+                    return $folder . '/' . $filename;
+                }
+            }
+        } catch (\Throwable $e) {
+            if (isset($image) && $image) {
+                imagedestroy($image);
+            }
         }
 
-        return $file->store($folder, 'public');
+        return $file->storeAs($folder, $filename, 'public');
     }
 
     public function index()
