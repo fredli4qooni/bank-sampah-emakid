@@ -28,6 +28,11 @@ echo "[entrypoint] Fixing storage permissions..."
 chown -R www-data:www-data /var/www/storage/app/public 2>/dev/null || true
 chmod -R 775 /var/www/storage/app/public 2>/dev/null || true
 
+echo "[entrypoint] Fixing nginx tmp permissions..."
+mkdir -p /var/lib/nginx/tmp /var/log/nginx
+chown -R www-data:www-data /var/lib/nginx /var/log/nginx 2>/dev/null || true
+chmod -R 755 /var/lib/nginx /var/log/nginx 2>/dev/null || true
+
 echo "[entrypoint] Optimizing..."
 php artisan optimize || true
 
