@@ -64,41 +64,6 @@
         </div>
     </section>
 
-    <section id="faq" class="py-20 bg-white">
-        <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl font-black text-gray-900 tracking-tight">Pertanyaan yang Sering Diajukan (FAQ)</h2>
-                <p class="mt-3 text-gray-500">Temukan panduan dan informasi lengkap tentang layanan Bank Sampah Emak.id.</p>
-            </div>
-
-            <div class="space-y-4">
-                @forelse($faqs as $faq)
-                <div x-data="{ expanded: false }" class="border border-gray-200 rounded-xl bg-white shadow-sm overflow-hidden transition-all hover:border-green-300">
-                    <button @click="expanded = ! expanded" class="w-full text-left px-6 py-4 flex justify-between items-center focus:outline-none">
-                        <span class="font-bold text-gray-800 text-lg pr-4">{{ $faq->pertanyaan }}</span>
-                        <svg class="w-6 h-6 text-green-500 transform transition-transform duration-200 flex-shrink-0" :class="{'rotate-180': expanded}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                        </svg>
-                    </button>
-                    <div x-show="expanded" x-collapse x-cloak>
-                        <div class="px-6 pb-5 pt-1 text-gray-600 leading-relaxed border-t border-gray-50 mt-2">
-                            {!! nl2br(e($faq->jawaban)) !!}
-                        </div>
-                        @if($faq->kategori)
-                        <div class="px-6 pb-4">
-                            <span class="text-xs font-bold text-green-600 bg-green-50 px-2.5 py-1 rounded-md">{{ $faq->kategori }}</span>
-                        </div>
-                        @endif
-                    </div>
-                </div>
-                @empty
-                <div class="text-center p-8 bg-gray-50 rounded-xl border border-dashed border-gray-300 text-gray-500 italic">
-                    Belum ada informasi FAQ yang dipublikasikan saat ini.
-                </div>
-                @endforelse
-            </div>
-        </div>
-    </section>
     <!-- Registration Section -->
     <section id="pendaftaran-unit" class="py-16 bg-white relative overflow-hidden">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -170,6 +135,43 @@
             </div>
         </div>
     </section>
+
+    <section id="faq" class="py-20 bg-white">
+        <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-black text-gray-900 tracking-tight">Pertanyaan yang Sering Diajukan (FAQ)</h2>
+                <p class="mt-3 text-gray-500">Temukan panduan dan informasi lengkap tentang layanan Bank Sampah Emak.id.</p>
+            </div>
+
+            <div class="space-y-4">
+                @forelse($faqs as $faq)
+                <div x-data="{ expanded: false }" class="border border-gray-200 rounded-xl bg-white shadow-sm overflow-hidden transition-all hover:border-green-300">
+                    <button @click="expanded = ! expanded" class="w-full text-left px-6 py-4 flex justify-between items-center focus:outline-none">
+                        <span class="font-bold text-gray-800 text-lg pr-4">{{ $faq->pertanyaan }}</span>
+                        <svg class="w-6 h-6 text-green-500 transform transition-transform duration-200 flex-shrink-0" :class="{'rotate-180': expanded}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                    <div x-show="expanded" x-collapse x-cloak>
+                        <div class="px-6 pb-5 pt-1 text-gray-600 leading-relaxed border-t border-gray-50 mt-2">
+                            {!! nl2br(e($faq->jawaban)) !!}
+                        </div>
+                        @if($faq->kategori)
+                        <div class="px-6 pb-4">
+                            <span class="text-xs font-bold text-green-600 bg-green-50 px-2.5 py-1 rounded-md">{{ $faq->kategori }}</span>
+                        </div>
+                        @endif
+                    </div>
+                </div>
+                @empty
+                <div class="text-center p-8 bg-gray-50 rounded-xl border border-dashed border-gray-300 text-gray-500 italic">
+                    Belum ada informasi FAQ yang dipublikasikan saat ini.
+                </div>
+                @endforelse
+            </div>
+        </div>
+    </section>
+    
 
     <section id="kontak" class="py-16 bg-green-50/50 border-t border-green-100">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

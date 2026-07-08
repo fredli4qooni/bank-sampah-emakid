@@ -144,7 +144,7 @@ class ValidasiController extends Controller
             'ids_pending' => 'required|string',
             'ids_all' => 'required|string',
             'total_berat_lapangan' => 'required|numeric|min:0',
-            'berat_gudang' => 'required|numeric|min:0|max:' . $request->total_berat_lapangan,
+            'berat_gudang' => 'required|numeric|min:0',
         ]);
 
         $idsPending = explode(',', $request->ids_pending);
@@ -161,17 +161,19 @@ class ValidasiController extends Controller
 
         $beratLapangan = $request->total_berat_lapangan;
         $beratGudang = $request->berat_gudang;
-        $selisih = abs($beratLapangan - $beratGudang);
+        $selisihAbs = abs($beratLapangan - $beratGudang);
+        $selisihReal = $beratGudang - $beratLapangan;
+        $selisihFormatted = ($selisihReal > 0 ? '+' : '') . $selisihReal;
 
         $keterangan = $request->keterangan ? ' - Ket: ' . $request->keterangan : '';
         $catatan = null;
         $newStatus = 'valid';
         
-        if ($selisih > 10) {
-            $catatan = "Selisih berat >10kg (Lap: {$beratLapangan}kg, Gud: {$beratGudang}kg). Perlu di evaluasi pengelola." . $keterangan;
+        if ($selisihAbs > 10) {
+            $catatan = "Selisih ekstrim {$selisihFormatted}kg (Lap: {$beratLapangan}kg, Gud: {$beratGudang}kg). Perlu di evaluasi pengelola." . $keterangan;
             $newStatus = 'terkoreksi';
-        } elseif ($selisih > 0) {
-            $catatan = "Terkoreksi Wajar: Selisih {$selisih}kg (Lap: {$beratLapangan}kg, Gud: {$beratGudang}kg)." . $keterangan;
+        } elseif ($selisihAbs > 0) {
+            $catatan = "Terkoreksi Wajar: Selisih {$selisihFormatted}kg (Lap: {$beratLapangan}kg, Gud: {$beratGudang}kg)." . $keterangan;
             $newStatus = 'terkoreksi';
         } else {
             $catatan = "Sesuai (Lap: {$beratLapangan}kg, Gud: {$beratGudang}kg)." . $keterangan;
