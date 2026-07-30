@@ -1,5 +1,11 @@
 <x-guest-layout>
     <x-auth-session-status class="mb-4" :status="session('status')" />
+    
+    @if (session('error'))
+        <div class="mb-4 font-medium text-sm text-red-600 bg-red-50 p-3 rounded-xl border border-red-200 text-center">
+            {{ session('error') }}
+        </div>
+    @endif
 
     <div class="mb-8 text-center">
         <h2 class="text-2xl font-black text-gray-800">Selamat Datang!</h2>

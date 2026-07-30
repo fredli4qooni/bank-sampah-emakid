@@ -20,6 +20,10 @@ return Application::configure(basePath: dirname(__DIR__))
         //
     })
     ->withExceptions(function (Exceptions $exceptions): void {
+        $exceptions->render(function (\Illuminate\Session\TokenMismatchException $e, Request $request) {
+            return redirect()->back()->withInput($request->except('password', '_token'))->with('error', 'Halaman telah kedaluwarsa karena terlalu lama didiamkan. Silakan coba submit lagi.');
+        });
+
         $exceptions->shouldRenderJsonWhen(
             fn(Request $request) => $request->is('api/*'),
         );
