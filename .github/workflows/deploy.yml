@@ -78,7 +78,7 @@ jobs:
           command_timeout: 15m
           script: |
             set -e
-            cd ~/sewa/bank-sampah-emakid
+            cd /home/ubuntu/sewa/bank-sampah-emakid
 
             if [ ! -f .env ]; then
               echo "[deploy] .env missing; abort."
